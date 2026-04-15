@@ -1,0 +1,407 @@
+{% extends 'myapp/base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard | The Better Feel{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root { --primary: #c2a15b; --secondary: #1a1a2e; }
+
+    .admin-wrapper {
+        display: flex;
+        min-height: 100vh;
+        margin-top: 0;
+        background: #f4f2ee;
+    }
+
+    .admin-sidebar {
+        width: 250px;
+        background: var(--secondary);
+        padding: 36px 0;
+        display: flex;
+        flex-direction: column;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+        flex-shrink: 0;
+    }
+    .admin-sidebar .brand { padding: 0 28px 28px; border-bottom: 1px solid rgba(255,255,255,0.07); margin-bottom: 16px; }
+    .admin-sidebar .brand h2 { font-family: 'Playfair Display', serif; color: var(--primary); font-size: 1.1rem; line-height: 1.4; }
+    .admin-sidebar .brand p  { color: rgba(255,255,255,0.3); font-size: 0.72rem; margin-top: 3px; }
+    .admin-nav .section-label { padding: 18px 28px 6px; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 2px; color: rgba(255,255,255,0.2); }
+    .admin-nav a {
+        display: flex; align-items: center; gap: 12px;
+        padding: 13px 28px; color: rgba(255,255,255,0.5);
+        text-decoration: none; font-size: 0.88rem; font-weight: 500;
+        transition: all 0.2s; border-left: 3px solid transparent;
+    }
+    .admin-nav a:hover, .admin-nav a.active { color: white; background: rgba(255,255,255,0.05); border-left-color: var(--primary); }
+    .admin-nav a i { width: 16px; text-align: center; }
+
+    .admin-main { flex: 1; padding: 36px; overflow-x: hidden; min-width: 0; }
+
+    .admin-topbar { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; }
+    .admin-topbar h1 { font-family: 'Playfair Display', serif; font-size: 1.9rem; color: var(--secondary); }
+    .admin-topbar p  { color: #999; font-size: 0.85rem; margin-top: 3px; }
+    .admin-user-tag { font-size: 0.82rem; color: #aaa; text-align: right; }
+    .admin-user-tag strong { color: var(--secondary); }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-bottom: 30px; }
+    .stat-card {
+        background: white; border-radius: 18px; padding: 22px 20px;
+        display: flex; align-items: center; gap: 16px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    }
+    .stat-icon { width: 48px; height: 48px; border-radius: 13px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+    .si-gold   { background: rgba(194,161,91,0.12); color: var(--primary); }
+    .si-green  { background: rgba(34,197,94,0.1);   color: #16a34a; }
+    .si-yellow { background: rgba(234,179,8,0.1);   color: #ca8a04; }
+    .si-red    { background: rgba(239,68,68,0.1);   color: #dc2626; }
+    .stat-info .num { font-size: 1.7rem; font-weight: 700; color: var(--secondary); line-height: 1; }
+    .stat-info .lbl { font-size: 0.72rem; color: #aaa; margin-top: 3px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    .table-card { background: white; border-radius: 22px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); overflow: hidden; }
+    .table-header { padding: 22px 28px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f5f5f5; flex-wrap: wrap; gap: 12px; }
+    .table-header h3 { font-size: 1.05rem; font-weight: 700; color: var(--secondary); }
+
+    .filter-tabs { display: flex; gap: 7px; flex-wrap: wrap; }
+    .filter-tab {
+        padding: 6px 15px; border-radius: 20px; font-size: 0.78rem; font-weight: 600;
+        cursor: pointer; border: 1.5px solid #eee; background: white; color: #888;
+        text-decoration: none; transition: all 0.2s;
+    }
+    .filter-tab:hover { border-color: var(--primary); color: var(--primary); }
+    .filter-tab.active { background: var(--secondary); color: white; border-color: var(--secondary); }
+
+    table { width: 100%; border-collapse: collapse; }
+    thead th { padding: 13px 18px; text-align: left; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1px; color: #bbb; background: #fafafa; font-weight: 700; border-bottom: 1px solid #f0f0f0; }
+    tbody tr { border-bottom: 1px solid #f8f8f8; transition: background 0.15s; }
+    tbody tr:hover { background: #fdfcfa; }
+    tbody tr:last-child { border-bottom: none; }
+    td { padding: 15px 18px; font-size: 0.86rem; color: var(--secondary); vertical-align: middle; }
+
+    .user-cell { display: flex; align-items: center; gap: 10px; }
+    .user-avatar { width: 32px; height: 32px; background: linear-gradient(135deg, var(--primary), #a8873d); border-radius: 9px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 0.82rem; flex-shrink: 0; }
+    .user-cell .uname { font-weight: 600; font-size: 0.88rem; }
+    .user-cell .uemail { font-size: 0.72rem; color: #bbb; }
+
+    .badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 11px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; white-space: nowrap; }
+    .b-confirmed { background: #dcfce7; color: #16a34a; }
+    .b-pending   { background: #fef9c3; color: #ca8a04; }
+    .b-rejected  { background: #fee2e2; color: #dc2626; }
+    .b-cancelled { background: #f3f4f6; color: #6b7280; }
+
+    .booking-id { font-family: monospace; font-size: 0.78rem; color: var(--primary); font-weight: 600; }
+
+    .action-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+    .btn-act {
+        padding: 5px 12px; border-radius: 8px; border: none; cursor: pointer;
+        font-size: 0.75rem; font-weight: 700; font-family: inherit;
+        transition: all 0.2s; display: inline-flex; align-items: center; gap: 5px;
+        text-decoration: none;
+    }
+    .btn-accept  { background: #dcfce7; color: #16a34a; }
+    .btn-accept:hover  { background: #16a34a; color: white; }
+    .btn-reject  { background: #fee2e2; color: #dc2626; }
+    .btn-reject:hover  { background: #dc2626; color: white; }
+    .btn-trash   { background: #f5f5f5; color: #999; }
+    .btn-trash:hover   { background: var(--secondary); color: white; }
+
+    .empty-state { text-align: center; padding: 60px 20px; color: #ccc; }
+    .empty-state i { font-size: 2.8rem; margin-bottom: 14px; display: block; }
+
+    /* Modal */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center; }
+    .modal-overlay.show { display: flex; }
+    .modal-box { background: white; border-radius: 22px; padding: 38px; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 30px 80px rgba(0,0,0,0.2); }
+    .modal-box .micon { font-size: 2.4rem; margin-bottom: 14px; }
+    .modal-box h3 { font-size: 1.25rem; color: var(--secondary); margin-bottom: 8px; }
+    .modal-box p  { color: #888; font-size: 0.88rem; margin-bottom: 26px; line-height: 1.6; }
+    .modal-btns { display: flex; gap: 10px; justify-content: center; }
+    .mbtn-back    { padding: 11px 26px; border-radius: 11px; border: 1.5px solid #eee; background: white; color: #666; cursor: pointer; font-family: inherit; font-weight: 600; font-size: 0.88rem; }
+    .mbtn-danger  { padding: 11px 26px; border-radius: 11px; border: none; background: #dc2626; color: white; cursor: pointer; font-family: inherit; font-weight: 700; font-size: 0.88rem; }
+
+    @media (max-width: 1100px) { .stats-grid { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 768px)  {
+        .admin-sidebar { display: none; }
+        .admin-main { padding: 18px; }
+        .stats-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+        .stat-card { padding: 16px 14px; gap: 12px; }
+        .stat-info .num { font-size: 1.4rem; }
+        .admin-topbar { flex-direction: column; align-items: flex-start; gap: 6px; margin-bottom: 20px; }
+        .admin-topbar h1 { font-size: 1.5rem; }
+        .table-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+        .filter-tabs { width: 100%; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; }
+        table { font-size: 0.78rem; }
+        td, thead th { padding: 10px 8px; }
+        .action-btns { flex-direction: column; gap: 4px; }
+        .btn-act { font-size: 0.7rem; padding: 5px 8px; }
+        /* Hide less important columns on mobile */
+        .col-hide { display: none; }
+        /* Mobile bottom nav for admin */
+        .admin-mobile-nav {
+            display: flex;
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: var(--secondary);
+            z-index: 1000;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+        .admin-main { padding-bottom: 70px; }
+    }
+    @media (min-width: 769px) {
+        .admin-mobile-nav { display: none; }
+    }
+    @media (max-width: 480px) {
+        .stats-grid { grid-template-columns: 1fr 1fr; }
+        .admin-main { padding: 12px; }
+        /* Stack table rows on very small screens */
+        table, thead, tbody, th, td, tr { display: block; }
+        thead tr { display: none; }
+        tbody tr {
+            border: 1px solid #f0f0f0;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            padding: 12px;
+            background: white;
+        }
+        td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 4px;
+            border-bottom: 1px solid #f8f8f8;
+            font-size: 0.82rem;
+        }
+        td:last-child { border-bottom: none; }
+        td::before {
+            content: attr(data-label);
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #bbb;
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-right: 10px;
+        }
+        .action-btns { flex-direction: row; flex-wrap: wrap; }
+    }
+</style>
+{% endblock %}
+
+{% block navbar %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block content %}
+<div class="admin-wrapper">
+
+    <aside class="admin-sidebar">
+        <div class="brand">
+            <h2>The Better Feel</h2>
+            <p>Admin Dashboard</p>
+        </div>
+        <nav class="admin-nav">
+            <div class="section-label">Main</div>
+            <a href="{% url 'salon_admin' %}" class="active"><i class="fas fa-calendar-check"></i> Bookings</a>
+            <a href="{% url 'home' %}" target="_blank"><i class="fas fa-globe"></i> View Site</a>
+            <div class="section-label">Account</div>
+            <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+    </aside>
+
+    <main class="admin-main">
+
+        <div class="admin-topbar">
+            <div>
+                <h1>Bookings</h1>
+                <p>Review and manage all client appointment requests</p>
+            </div>
+            <div class="admin-user-tag">
+                <i class="fas fa-shield-alt" style="color:var(--primary)"></i>
+                Logged in as <strong>{{ request.user.username }}</strong>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon si-gold"><i class="fas fa-calendar-alt"></i></div>
+                <div class="stat-info"><div class="num">{{ total }}</div><div class="lbl">Total</div></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon si-yellow"><i class="fas fa-clock"></i></div>
+                <div class="stat-info"><div class="num">{{ pending }}</div><div class="lbl">Pending</div></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon si-green"><i class="fas fa-check-circle"></i></div>
+                <div class="stat-info"><div class="num">{{ confirmed }}</div><div class="lbl">Confirmed</div></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon si-red"><i class="fas fa-times-circle"></i></div>
+                <div class="stat-info"><div class="num">{{ rejected }}</div><div class="lbl">Rejected</div></div>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-card">
+            <div class="table-header">
+                <h3>All Appointments</h3>
+                <div class="filter-tabs">
+                    <a href="{% url 'salon_admin' %}"                      class="filter-tab {% if not status_filter %}active{% endif %}">All</a>
+                    <a href="?status=Pending"   class="filter-tab {% if status_filter == 'Pending' %}active{% endif %}">Pending</a>
+                    <a href="?status=Confirmed" class="filter-tab {% if status_filter == 'Confirmed' %}active{% endif %}">Confirmed</a>
+                    <a href="?status=Rejected"  class="filter-tab {% if status_filter == 'Rejected' %}active{% endif %}">Rejected</a>
+                </div>
+            </div>
+
+            {% if bookings %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Client</th>
+                        <th>Booking ID</th>
+                        <th>Service</th>
+                        <th>Date & Time</th>
+                        <th>Payment</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for b in bookings %}
+                <tr>
+                    <td data-label="Client">
+                        <div class="user-cell">
+                            <div class="user-avatar">{{ b.user.username|first|upper }}</div>
+                            <div>
+                                <div class="uname">{{ b.user.username }}</div>
+                                <div class="uemail">{{ b.user.email|default:"—" }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td data-label="Booking ID"><span class="booking-id">{{ b.booking_id|default:"—" }}</span></td>
+                    <td data-label="Service">{{ b.service }}</td>
+                    <td data-label="Date & Time">
+                        <div style="font-weight:600;">{{ b.date|date:"d M Y" }}</div>
+                        <div style="font-size:0.75rem;color:#bbb;">{{ b.time|time:"h:i A" }}</div>
+                    </td>
+                    <td data-label="Payment" style="font-size:0.82rem; color:#666;">
+                        {% if b.payment_method == 'credit_card' %}<i class="fas fa-credit-card"></i> Card
+                        {% elif b.payment_method == 'upi' %}<i class="fas fa-mobile-alt"></i> UPI
+                        {% elif b.payment_method == 'cash' %}<i class="fas fa-money-bill-wave"></i> Cash
+                        {% else %}—{% endif %}
+                    </td>
+                    <td data-label="Amount" style="font-weight:600; color:var(--primary);">{% if b.price %}₹{{ b.price }}{% else %}—{% endif %}</td>
+                    <td data-label="Status">
+                        {% if b.status == 'Confirmed' %}
+                            <span class="badge b-confirmed"><i class="fas fa-check-circle"></i> Confirmed</span>
+                        {% elif b.status == 'Pending' %}
+                            <span class="badge b-pending"><i class="fas fa-clock"></i> Pending</span>
+                        {% elif b.status == 'Rejected' %}
+                            <span class="badge b-rejected"><i class="fas fa-times-circle"></i> Rejected</span>
+                        {% else %}
+                            <span class="badge b-cancelled">{{ b.status }}</span>
+                        {% endif %}
+                    </td>
+                    <td data-label="Actions">
+                        <div class="action-btns">
+                            {% if b.status != 'Confirmed' %}
+                            <form method="POST" action="{% url 'admin_booking_action' b.id 'confirm' %}" style="display:inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-act btn-accept"><i class="fas fa-check"></i> Accept</button>
+                            </form>
+                            {% endif %}
+                            {% if b.status != 'Rejected' %}
+                            <button class="btn-act btn-reject" onclick="openRejectModal({{ b.id }})"><i class="fas fa-ban"></i> Reject</button>
+                            {% endif %}
+                            <button class="btn-act btn-trash" onclick="openDeleteModal({{ b.id }})" title="Delete"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-calendar-times"></i>
+                <p>No bookings found.</p>
+            </div>
+            {% endif %}
+        </div>
+
+    </main>
+</div>
+
+<!-- Mobile bottom nav -->
+<nav class="admin-mobile-nav">
+    <a href="{% url 'salon_admin' %}" style="flex:1; display:flex; flex-direction:column; align-items:center; padding:12px 0; color:var(--primary); font-size:0.7rem; gap:4px; text-decoration:none;">
+        <i class="fas fa-calendar-check" style="font-size:1.1rem;"></i> Bookings
+    </a>
+    <a href="{% url 'salon_admin' %}?status=Pending" style="flex:1; display:flex; flex-direction:column; align-items:center; padding:12px 0; color:rgba(255,255,255,0.5); font-size:0.7rem; gap:4px; text-decoration:none;">
+        <i class="fas fa-clock" style="font-size:1.1rem;"></i> Pending
+    </a>
+    <a href="{% url 'home' %}" target="_blank" style="flex:1; display:flex; flex-direction:column; align-items:center; padding:12px 0; color:rgba(255,255,255,0.5); font-size:0.7rem; gap:4px; text-decoration:none;">
+        <i class="fas fa-globe" style="font-size:1.1rem;"></i> Site
+    </a>
+    <a href="{% url 'logout' %}" style="flex:1; display:flex; flex-direction:column; align-items:center; padding:12px 0; color:rgba(255,255,255,0.5); font-size:0.7rem; gap:4px; text-decoration:none;">
+        <i class="fas fa-sign-out-alt" style="font-size:1.1rem;"></i> Logout
+    </a>
+</nav>
+
+<!-- Reject Modal -->
+<div class="modal-overlay" id="rejectModal">
+    <div class="modal-box">
+        <div class="micon">⚠️</div>
+        <h3>Reject Booking?</h3>
+        <p>The client will be notified that their booking has been rejected.<br>If they paid online, they will see a refund notice.</p>
+        <div class="modal-btns">
+            <button class="mbtn-back" onclick="closeModals()">Go Back</button>
+            <form method="POST" id="rejectForm" style="display:inline">
+                {% csrf_token %}
+                <button type="submit" class="mbtn-danger">Yes, Reject</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal-overlay" id="deleteModal">
+    <div class="modal-box">
+        <div class="micon">🗑️</div>
+        <h3>Delete Booking?</h3>
+        <p>This will permanently remove the booking record and cannot be undone.</p>
+        <div class="modal-btns">
+            <button class="mbtn-back" onclick="closeModals()">Go Back</button>
+            <form method="POST" id="deleteForm" style="display:inline">
+                {% csrf_token %}
+                <button type="submit" class="mbtn-danger">Yes, Delete</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openRejectModal(id) {
+        document.getElementById('rejectForm').action = '/salon-admin/booking/' + id + '/reject/';
+        document.getElementById('rejectModal').classList.add('show');
+    }
+    function openDeleteModal(id) {
+        document.getElementById('deleteForm').action = '/salon-admin/booking/' + id + '/delete/';
+        document.getElementById('deleteModal').classList.add('show');
+    }
+    function closeModals() {
+        var modals = document.querySelectorAll('.modal-overlay');
+        for (var i = 0; i < modals.length; i++) {
+            modals[i].classList.remove('show');
+        }
+    }
+    var overlays = document.querySelectorAll('.modal-overlay');
+    for (var j = 0; j < overlays.length; j++) {
+        overlays[j].addEventListener('click', function(e) {
+            if (e.target === this) closeModals();
+        });
+    }
+</script>
+{% endblock %}

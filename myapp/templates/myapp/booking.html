@@ -1,0 +1,406 @@
+{% extends 'myapp/base.html' %}
+{% load static %}
+
+{% block title %}Book Appointment | The Better Feel{% endblock %}
+
+{% block extra_css %}
+<style>
+    .booking-wrapper {
+        padding: 180px 0 100px;
+        background: radial-gradient(circle at top right, var(--accent) 0%, var(--bg-main) 50%);
+    }
+
+    .booking-grid {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr;
+        gap: 40px;
+        align-items: start;
+    }
+
+    .booking-card {
+        padding: 50px;
+    }
+
+    .booking-card h2 {
+        font-size: 2.5rem;
+        margin-bottom: 30px;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 10px;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 15px 20px;
+        border-radius: 12px;
+        border: 1px solid rgba(0,0,0,0.1);
+        background: white;
+        font-family: inherit;
+        font-size: 1rem;
+        transition: var(--transition);
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(194, 161, 91, 0.1);
+    }
+
+    .time-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 12px;
+        margin-top: 15px;
+    }
+
+    .time-slot {
+        padding: 12px;
+        border: 1px solid rgba(0,0,0,0.05);
+        border-radius: 10px;
+        text-align: center;
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 500;
+        background: white;
+        transition: var(--transition);
+    }
+
+    .time-slot:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+
+    .time-slot.selected {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+        box-shadow: 0 5px 15px rgba(194,161,91,0.3);
+    }
+
+    /* Payment Methods Styles */
+    .payment-group {
+        border-top: 1px solid rgba(0,0,0,0.05);
+        padding-top: 20px;
+        margin-top: 10px;
+    }
+    .payment-options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin: 15px 0;
+    }
+    .payment-option {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        background: #f9f9f9;
+        padding: 10px 18px;
+        border-radius: 40px;
+        border: 1px solid #eee;
+        transition: all 0.2s;
+    }
+    .payment-option.selected {
+        border-color: var(--primary);
+        background: #fff7e8;
+    }
+    .payment-option input {
+        accent-color: var(--primary);
+        width: 18px;
+        height: 18px;
+        margin: 0;
+    }
+    .payment-detail-panel {
+        background: #fafaf8;
+        border-radius: 20px;
+        padding: 20px;
+        margin-top: 15px;
+        display: none;
+    }
+    .payment-detail-panel.active {
+        display: block;
+    }
+    .inline-fields {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+    .small-input {
+        padding: 12px 15px;
+        border-radius: 12px;
+        border: 1px solid #ddd;
+        width: 100%;
+    }
+    .note-text {
+        font-size: 0.7rem;
+        color: #777;
+        margin-top: 8px;
+    }
+
+    /* Summary Card */
+    .summary-card {
+        position: sticky;
+        top: 120px;
+        background: var(--secondary);
+        color: white;
+        border-radius: 30px;
+        padding: 40px;
+    }
+
+    .summary-card h3 {
+        color: var(--primary);
+        font-size: 1.8rem;
+        margin-bottom: 25px;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .summary-row span:first-child { opacity: 0.6; font-size: 0.9rem; }
+    .summary-row span:last-child { font-weight: 500; }
+
+    .price-total {
+        margin-top: 25px;
+        padding-top: 25px;
+        border-top: 1px solid var(--primary);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .price-total h4 { font-size: 1.5rem; }
+
+    @media (max-width: 1024px) {
+        .booking-grid { grid-template-columns: 1fr; }
+        .summary-card { position: static; }
+    }
+
+    @media (max-width: 768px) {
+        .booking-wrapper { padding: 130px 0 60px; }
+        .booking-card { padding: 24px; }
+        .booking-card h2 { font-size: 1.8rem; }
+        .time-grid { grid-template-columns: repeat(3, 1fr); }
+        .summary-card { padding: 28px 20px; border-radius: 20px; }
+    }
+
+    @media (max-width: 480px) {
+        .time-grid { grid-template-columns: repeat(2, 1fr); }
+        .booking-card h2 { font-size: 1.5rem; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="booking-wrapper">
+    <div class="container">
+        <div class="booking-grid">
+            
+            <div class="premium-card booking-card" data-aos>
+                <h2 class="font-serif">Reserve Your Session</h2>
+                <form id="bookingForm" method="POST" action="{% url 'booking' %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label>Select Service</label>
+                        <select id="serviceSelect" name="service" class="form-control" required>
+                            <option value="">-- Choose a Service --</option>
+                            <optgroup label="Hair Care">
+                                <option value="Haircut & Style" data-price="275">Haircut & Artistry Style - ₹275</option>
+                                <option value="Balayage" data-price="1100">Signature Balayage - ₹1,100</option>
+                                <option value="Keratin Smoothing" data-price="2100">Keratin Smoothing - ₹2,100</option>
+                                <option value="Deep conditioning" data-price="500">Deep conditioning - ₹500</option>
+                                <option value="Designer Haircut" data-price="270">Designer Haircut - ₹270</option>
+                            </optgroup>
+                            <optgroup label="Skin & Spa">
+                                <option value="Holistic Facial Glow" data-price="550">Holistic Facial Glow - ₹550</option>
+                                <option value="Deep Tissue Ritual" data-price="1500">Deep Tissue Ritual - ₹1,500</option>
+                                <option value="Signature Glow Facial" data-price="600">Signature Glow Facial - ₹600</option>
+                                <option value="Delox Body Scrub" data-price="800">Delox Body Scrub - ₹800</option>
+                            </optgroup>
+                            <optgroup label="Makeup">
+                                <option value="Bridal Makeup" data-price="5500">Bridal Makeup - ₹5,500</option>
+                                <option value="Party Makeup" data-price="1500">Party Makeup - ₹1,500</option>
+                                <option value="Daily Makeup" data-price="600">Daily Makeup - ₹600</option>
+                                <option value="Bridal & Party Makeup" data-price="7000">Bridal & Party Makeup - ₹7,000</option>
+                            </optgroup>
+                            <optgroup label="Nails Arts">
+                                <option value="Basic Nail Polish Art" data-price="500">Basic Nail Polish Art - ₹500</option>
+                                <option value="French Manicure" data-price="700">French Manicure - ₹700</option>
+                                <option value="Gel Nail Art" data-price="2000">Gel Nail Art - ₹2,000</option>
+                                <option value="Acrylic Nails Extensions" data-price="7000">Acrylic Nails Extensions - ₹7,000</option>
+                                <option value="Dip Powder Nails" data-price="2500">Dip Powder Nails - ₹2,500</option>
+                                <option value="3D Bridal Nails" data-price="3000">3D Bridal Nails - ₹3,000</option>
+                            </optgroup>
+                            <optgroup label="Hair Services">
+                                <option value="Hair Cut Basic" data-price="300">Hair Cut Basic - ₹300</option>
+                                <option value="Hair Cut Advance" data-price="700">Hair Cut Advance - ₹700</option>
+                                <option value="Hair Wash + Styling" data-price="400">Hair Wash + Styling - ₹400</option>
+                            </optgroup>
+                            <optgroup label="Beard Services">
+                                <option value="Beard Trim" data-price="100">Beard Trim - ₹100</option>
+                                <option value="Beard Styling/Design" data-price="300">Beard Styling/Design - ₹300</option>
+                                <option value="Clean Shave" data-price="150">Clean Shave - ₹150</option>
+                            </optgroup>
+                            <optgroup label="Hair Color & Highlights">
+                                <option value="Hair Color" data-price="1500">Hair Color - ₹1,500</option>
+                                <option value="Beard Color" data-price="500">Beard Color - ₹500</option>
+                                <option value="Highlights/Streaks" data-price="3000">Highlights/Streaks - ₹3,000</option>
+                            </optgroup>
+                            <optgroup label="Facial & Skin Services">
+                                <option value="Cleanup" data-price="400">Cleanup - ₹300-500 (avg ₹400)</option>
+                                <option value="Facial" data-price="1000">Facial - ₹500-1500 (avg ₹1000)</option>
+                                <option value="De Tan Facial" data-price="1400">De Tan Facial - ₹800-2000 (avg ₹1400)</option>
+                            </optgroup>
+                            <optgroup label="Spa & Massage">
+                                <option value="Head Massage" data-price="550">Head Massage - ₹300-800 (avg ₹550)</option>
+                                <option value="Hair Spa" data-price="700">Hair Spa - ₹400-1000 (avg ₹700)</option>
+                                <option value="Body Massage" data-price="1000">Body Massage - ₹1,000</option>
+                            </optgroup>
+                            <optgroup label="Grooming">
+                                <option value="Manicure" data-price="550">Manicure - ₹300-800 (avg ₹550)</option>
+                                <option value="Pedicure" data-price="750">Pedicure - ₹500-1000 (avg ₹750)</option>
+                                <option value="Waxing" data-price="700">Waxing - ₹400-1000 (avg ₹700)</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Appointment Date</label>
+                        <input type="date" name="date" class="form-control" id="dateInput" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Available Times</label>
+                        <div class="time-grid" id="timeGrid">
+                            <div class="time-slot" data-time="09:00">09:00 AM</div>
+                            <div class="time-slot" data-time="10:30">10:30 AM</div>
+                            <div class="time-slot" data-time="12:00">12:00 PM</div>
+                            <div class="time-slot" data-time="14:00">02:00 PM</div>
+                            <div class="time-slot" data-time="15:30">03:30 PM</div>
+                            <div class="time-slot" data-time="17:00">05:00 PM</div>
+                        </div>
+                        <input type="hidden" name="time" id="timeInput" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Special Requests (Optional)</label>
+                        <textarea class="form-control" name="notes" rows="4" placeholder="Any specific needs or stylist preference?"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 20px;" id="submitBtn">Proceed to Payment &nbsp;<i class="fas fa-arrow-right"></i></button>
+                </form>
+            </div>
+
+            <div class="summary-card" data-aos data-aos-delay="100">
+                <h3 class="font-serif">Ritual Summary</h3>
+                <div class="summary-details">
+                    <div class="summary-row">
+                        <span>Service</span>
+                        <span id="sumService">None selected</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Date</span>
+                        <span id="sumDate">Not set</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Time</span>
+                        <span id="sumTime">Not selected</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Lead Stylist</span>
+                        <span>To be assigned</span>
+                    </div>
+                    
+                    <div class="price-total">
+                        <div>
+                            <p style="font-size: 0.8rem; opacity: 0.6; text-transform: uppercase;">Estimated Total</p>
+                            <h4 id="sumPrice">₹0</h4>
+                        </div>
+                        <i class="fas fa-gem" style="font-size: 2rem; color: var(--primary);"></i>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    // Time slot selection
+    const timeSlots = document.querySelectorAll('.time-slot');
+    const timeInput = document.getElementById('timeInput');
+    const sumTime = document.getElementById('sumTime');
+
+    timeSlots.forEach(slot => {
+        slot.addEventListener('click', () => {
+            timeSlots.forEach(s => s.classList.remove('selected'));
+            slot.classList.add('selected');
+            timeInput.value = slot.dataset.time;
+            sumTime.textContent = slot.textContent;
+        });
+    });
+
+    // Service & Summary updates
+    const serviceSelect = document.getElementById('serviceSelect');
+    const dateInput = document.getElementById('dateInput');
+    const sumService = document.getElementById('sumService');
+    const sumDate = document.getElementById('sumDate');
+    const sumPrice = document.getElementById('sumPrice');
+
+    serviceSelect.addEventListener('change', () => {
+        const option = serviceSelect.options[serviceSelect.selectedIndex];
+        sumService.textContent = option.value || 'None selected';
+        const price = option.dataset.price ? parseInt(option.dataset.price) : 0;
+        sumPrice.textContent = '₹' + price.toLocaleString('en-IN');
+    });
+
+    dateInput.addEventListener('change', () => {
+        sumDate.textContent = dateInput.value || 'Not set';
+    });
+
+    // Form validation before submit
+    const bookingForm = document.getElementById('bookingForm');
+    bookingForm.addEventListener('submit', function(e) {
+        if (!serviceSelect.value) {
+            alert('Please select a service.');
+            e.preventDefault();
+            return;
+        }
+        if (!dateInput.value) {
+            alert('Please select a date.');
+            e.preventDefault();
+            return;
+        }
+        if (!timeInput.value) {
+            alert('Please select a time slot.');
+            e.preventDefault();
+            return;
+        }
+    });
+    
+    // Set min date to today
+    const today = new Date().toISOString().split('T')[0];
+    dateInput.setAttribute('min', today);
+    
+    // Initialize summary with any pre-selected service (if any)
+    if (serviceSelect.value) {
+        const opt = serviceSelect.options[serviceSelect.selectedIndex];
+        sumService.textContent = opt.value;
+        sumPrice.textContent = '₹' + (opt.dataset.price || '0');
+    }
+</script>
+{% endblock %}

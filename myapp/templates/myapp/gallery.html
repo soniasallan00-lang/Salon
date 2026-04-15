@@ -1,0 +1,329 @@
+{% extends 'myapp/base.html' %}
+{% load static %}
+
+{% block title %}Gallery | The Better Feel{% endblock %}
+
+{% block extra_css %}
+<style>
+    .gallery-intro {
+        padding: 180px 0 60px;
+        text-align: center;
+        background: linear-gradient(rgba(31, 28, 26, 0.6), rgba(31, 28, 26, 0.6)), url("{% static 'images/background.jpg' %}") center/cover no-repeat;
+        color: white;
+    }
+
+    .filter-bar {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 60px;
+    }
+
+    .filter-btn {
+        padding: 10px 25px;
+        border-radius: 50px;
+        border: 1px solid rgba(0,0,0,0.1);
+        background: white;
+        cursor: pointer;
+        font-weight: 500;
+        transition: var(--transition);
+    }
+
+    .filter-btn.active, .filter-btn:hover {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+    }
+
+    .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 30px;
+        margin-bottom: 100px;
+    }
+
+    .gallery-card {
+        aspect-ratio: 1;
+        border-radius: 30px;
+        overflow: hidden;
+        position: relative;
+        cursor: pointer;
+        display: block; /* Ensure it's visible */
+    }
+
+    .gallery-card.hidden {
+        display: none;
+    }
+
+    .gallery-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 1s ease;
+    }
+
+    .gallery-card:hover img {
+        transform: scale(1.1);
+    }
+
+    .gallery-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to top, rgba(31, 28, 26, 0.8), transparent);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 30px;
+        opacity: 0;
+        transition: var(--transition);
+    }
+
+    .gallery-card:hover .gallery-overlay {
+        opacity: 1;
+    }
+
+    .gallery-overlay h4 { color: white; margin-bottom: 5px; font-size: 1.2rem; }
+    .gallery-overlay span { color: var(--primary); font-size: 0.9rem; font-weight: 500; }
+
+    @media (max-width: 768px) {
+        .gallery-intro { padding: 140px 0 50px; }
+        .gallery-intro h1 { font-size: 2.5rem !important; }
+        .gallery-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+        .filter-bar { gap: 8px; flex-wrap: wrap; justify-content: center; }
+        .filter-btn { padding: 8px 16px; font-size: 0.8rem; }
+    }
+
+    @media (max-width: 480px) {
+        .gallery-grid { grid-template-columns: 1fr; }
+        .gallery-card { aspect-ratio: 4/3; }
+    }
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(31, 28, 26, 0.95);
+        z-index: 3000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 40px;
+    }
+
+    .lightbox.active { display: flex; }
+
+    .lightbox-content {
+        max-width: 90%;
+        max-height: 90%;
+        position: relative;
+    }
+
+    .lightbox-content img {
+        width: 100%;
+        height: auto;
+        border-radius: 20px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    }
+
+    .close-lightbox {
+        position: absolute;
+        top: -40px;
+        right: 0;
+        color: white;
+        font-size: 2.5rem;
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="gallery-intro">
+    <div class="container">
+        <span class="text-gold" style="text-transform: uppercase; letter-spacing: 5px; font-weight: 700; color: #d4af37;">Visual Showcase</span>
+        <h1 class="font-serif" style="font-size: 4rem; margin: 20px 0; color: #ffffff;">Artistry in Motion</h1>
+        <p style="max-width: 600px; margin: 0 auto; color: rgba(255,255,255,0.8);">Explore real transformations and creative masterpieces captured within our sanctuary.</p>
+    </div>
+</section>
+
+<section>
+    <div class="container">
+        <!-- Filter Bar -->
+        <div class="filter-bar" data-aos>
+            <button class="filter-btn active" data-filter="all">All Masterpieces</button>
+            <button class="filter-btn" data-filter="hair">Hair Art</button>
+            <button class="filter-btn" data-filter="nails">Nail Design</button>
+            <button class="filter-btn" data-filter="spa">Spa Moments</button>
+              <button class="filter-btn" data-filter="makeup">Makeup</button>
+        </div>
+
+        <!-- Gallery Grid -->
+        <div class="gallery-grid" id="mainGallery">
+            
+            <div class="gallery-card" data-category="nails" data-aos>
+                <img src="{% static 'images/pexels-abolfazl-zarghami-465901605-17471377.jpg' %}" alt="Custom Nail Art">
+                <div class="gallery-overlay">
+                    <!-- <h4>Custom Nail Art</h4> -->
+                    <span>NAILS</span>
+                </div>
+            </div>
+
+            <div class="gallery-card" data-category="nails" data-aos>
+                <img src="{% static 'images/pexels-svliiim-34835305.jpg' %}" alt="Geometric Designs">
+                <div class="gallery-overlay">
+                    <!-- <h4>Geometric Designs</h4> -->
+                    <span>NAILS</span>
+                </div>
+            </div>
+
+            <div class="gallery-card" data-category="hair" data-aos>
+                <img src="{% static 'images/WhatsApp Image 2026-04-10 at 1.53.34 PM.jpeg' %}" alt="Vibrant Coloring">
+                <div class="gallery-overlay">
+                    <!-- <h4>Vibrant Coloring</h4> -->
+                    <span>HAIR</span>
+                </div>
+            </div>
+
+            <div class="gallery-card" data-category="spa" data-aos>
+                <img src="{% static 'images/pexels-farhad-19239103.jpg' %}" alt="Spa Treatment">
+                <div class="gallery-overlay">
+                    <!-- <h4>Relieving Spa Treatment</h4> -->
+                    <span>SPA</span>
+                </div>
+            </div>
+
+            <div class="gallery-card" data-category="hair" data-aos>
+                <img src="{% static 'images/WhatsApp Image 2026-04-10 at 2.04.15 PM.jpeg' %}" alt="Master Cut">
+                <div class="gallery-overlay">
+                    <!-- <h4>Master Cut & Style</h4> -->
+                    <span>HAIR</span>
+                </div>
+            </div>
+
+            <div class="gallery-card" data-category="hair" data-aos>
+                <img src="{% static 'images/WhatsApp Image 2026-04-10 at 1.58.09 PM.jpeg' %}" alt="Editorial Styling">
+                <div class="gallery-overlay">
+                    <!-- <h4>Editorial Styling</h4> -->
+                    <span>HAIR</span>
+                </div>
+            </div>
+
+            <div class="gallery-card" data-category="spa" data-aos>
+                <img src="{% static 'images/WhatsApp Image 2026-04-10 at 2.14.22 PM.jpeg' %}" alt="Serene Moments">
+                <div class="gallery-overlay">
+                    <!-- <h4>Serene Moments</h4> -->
+                    <span>SPA</span>
+                </div>
+            </div>
+
+            <div class="gallery-card" data-category="hair" data-aos>
+                <img src="{% static 'images/WhatsApp Image 2026-04-10 at 2.06.20 PM.jpeg' %}" alt="Classic Waves">
+                <div class="gallery-overlay">
+                    <!-- <h4>Classic Waves</h4> -->
+                    <span>SPA</span>
+                </div>
+            </div>
+
+              <div class="gallery-card" data-category="hair" data-aos>
+                <img src="{% static 'images/WhatsApp Image 2026-04-10 at 1.56.23 PM.jpeg' %}" alt="Classic Waves">
+                <div class="gallery-overlay">
+                    <!-- <h4>Classic Waves</h4> -->
+                    <span>HAIR</span>
+                </div>
+            </div>
+
+
+             <div class="gallery-card" data-category="makeup" data-aos>
+                <img src="{% static 'images/WhatsApp Image 2026-04-10 at 2.11.20 PM.jpeg' %}" alt="Custom Makeup">
+                <div class="gallery-overlay">
+                    <!-- <h4>Custom makeup</h4> -->
+                    <span>MAKEUP</span>
+                </div>
+            </div>
+
+             <div class="gallery-card" data-category="makeup" data-aos>
+                <img src="{% static 'images/makeup.jpg' %}" alt="Custom Makeup">
+                <div class="gallery-overlay">
+                    <!-- <h4>Custom makeup</h4> -->
+                    <span>MAKEUP</span>
+                </div>
+            </div>
+
+
+              <div class="gallery-card" data-category="makeup" data-aos>
+                <img src="{% static 'images/pexels-satyampixels-35999728.jpg' %}" alt="Custom Makeup">
+                <div class="gallery-overlay">
+                    <!-- <h4>Custom makeup</h4> -->
+                    <span>MAKEUP</span>
+                </div>
+            </div>
+
+
+
+
+        </div>
+
+        <div class="text-center" style="margin-bottom: 100px;" data-aos>
+            <a href="{% url 'booking' %}" class="btn btn-primary">Book This Look</a>
+        </div>
+    </div>
+</section>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+    <div class="lightbox-content">
+        <span class="close-lightbox" id="closeLightbox">&times;</span>
+        <img src="" id="lightboxImg">
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightboxImg');
+        const cards = document.querySelectorAll('.gallery-card');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+
+        // Lightbox Logic
+        cards.forEach(card => {
+            card.addEventListener('click', () => {
+                const img = card.querySelector('img');
+                lightboxImg.src = img.src;
+                lightbox.classList.add('active');
+            });
+        });
+
+        document.getElementById('closeLightbox').addEventListener('click', () => {
+            lightbox.classList.remove('active');
+        });
+
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) lightbox.classList.remove('active');
+        });
+
+        // Filtering Logic
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Toggle active class
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                const filter = btn.getAttribute('data-filter');
+
+                cards.forEach(card => {
+                    const category = card.getAttribute('data-category');
+                    if (filter === 'all' || category === filter) {
+                        card.classList.remove('hidden');
+                    } else {
+                        card.classList.add('hidden');
+                    }
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,202 @@
+{% extends 'myapp/base.html' %}
+{% load static %}
+
+{% block title %}Create Account | The Better Feel{% endblock %}
+
+{% block navbar %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .auth-page-container {
+        display: flex;
+        min-height: 100vh;
+        background: #fffefb;
+    }
+
+    .auth-visual {
+        flex: 1;
+        background: linear-gradient(rgba(31, 28, 26, 0.4), rgba(31, 28, 26, 0.4)), url("{% static 'images/pexels-cottonbro-7440132.jpg' %}") center/cover no-repeat;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 80px;
+        color: white;
+    }
+
+    .auth-visual h2 { font-size: 3.5rem; margin-bottom: 20px; line-height: 1.1; }
+    .auth-visual p { font-size: 1.2rem; opacity: 0.9; max-width: 500px; }
+
+    .auth-form-side {
+        width: 600px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 60px;
+    }
+
+    .form-content-wrapper {
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .auth-logo {
+        margin-bottom: 40px;
+    }
+
+    .auth-logo h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.2rem;
+        color: var(--secondary);
+    }
+
+    .auth-logo span { color: var(--primary); }
+
+    .form-header { margin-bottom: 40px; }
+    .form-header h3 { font-size: 2rem; margin-bottom: 10px; }
+    .form-header p { color: var(--text-muted); }
+
+    .custom-input-group {
+        margin-bottom: 25px;
+        position: relative;
+    }
+
+    .custom-input-group label {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+        color: var(--secondary);
+    }
+
+    .custom-input {
+        width: 100%;
+        padding: 15px 0;
+        border: none;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+        background: transparent;
+        font-family: inherit;
+        font-size: 1rem;
+        transition: var(--transition);
+        outline: none;
+    }
+
+    .custom-input:focus {
+        border-bottom-color: var(--primary);
+    }
+
+    .auth-btn {
+        width: 100%;
+        padding: 20px;
+        background: var(--secondary);
+        color: white;
+        border: none;
+        border-radius: 0;
+        font-weight: 600;
+        font-size: 1rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: var(--transition);
+        margin-top: 20px;
+    }
+
+    .auth-btn:hover {
+        background: var(--primary);
+        transform: translateY(-3px);
+    }
+
+    .name-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0 20px;
+    }
+
+    @media (max-width: 1100px) {
+        .auth-visual { display: none; }
+        .auth-form-side { width: 100%; }
+    }
+
+    @media (max-width: 480px) {
+        .auth-form-side { padding: 30px 18px; }
+        .auth-logo h1 { font-size: 1.6rem; }
+        .name-grid { grid-template-columns: 1fr; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-page-container">
+    <div class="auth-visual" data-aos="fade-right">
+        <h2 class="font-serif">Begin Your <br>Transformation</h2>
+        <p>Join our exclusive collective. Create an account to personalized your beauty rituals and manage your reservations with ease.</p>
+    </div>
+
+    <div class="auth-form-side">
+        <div class="form-content-wrapper" data-aos="fade-up">
+            <div class="auth-logo">
+                <a href="{% url 'home' %}" style="text-decoration: none;">
+                    <h1>The Better Feel <span>& Salon</span></h1>
+                </a>
+            </div>
+
+            <div class="form-header">
+                <h3>Create Account</h3>
+                <p>Start your journey into luxury beauty today</p>
+            </div>
+
+            <form method="POST" action="{% url 'register' %}">
+                {% csrf_token %}
+
+                <div class="name-grid">
+                    <div class="custom-input-group">
+                        <label>First Name</label>
+                        <input type="text" name="first_name" class="custom-input" placeholder="Jane" required>
+                    </div>
+                    <div class="custom-input-group">
+                        <label>Last Name</label>
+                        <input type="text" name="last_name" class="custom-input" placeholder="Smith" required>
+                    </div>
+                </div>
+
+                <div class="custom-input-group">
+                    <label>Username</label>
+                    <input type="text" name="username" class="custom-input" placeholder="Choose a username" required>
+                </div>
+
+                <div class="custom-input-group">
+                    <label>Email Address</label>
+                    <input type="email" name="email" class="custom-input" placeholder="jane@example.com" required>
+                </div>
+
+                <div class="custom-input-group">
+                    <label>Phone Number</label>
+                    <input type="tel" name="phone" class="custom-input" placeholder="+91 98765 43210">
+                </div>
+
+                <div class="custom-input-group">
+                    <label>Password</label>
+                    <input type="password" name="password1" class="custom-input" placeholder="Min. 8 characters" required>
+                </div>
+
+                <div class="custom-input-group">
+                    <label>Confirm Password</label>
+                    <input type="password" name="password2" class="custom-input" placeholder="Repeat your password" required>
+                </div>
+
+                <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 25px;">
+                    By joining, you agree to our <a href="#" class="text-gold" style="text-decoration: underline;">Terms</a> and <a href="#" class="text-gold" style="text-decoration: underline;">Privacy Policy</a>.
+                </p>
+
+                <button type="submit" class="auth-btn">Join The Collective</button>
+            </form>
+
+            <p style="text-align: center; margin-top: 40px; font-size: 0.9rem; color: var(--text-muted);">
+                Already have an account? <a href="{% url 'login' %}" class="text-gold" style="font-weight: 600; text-decoration: none;">Sign In</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

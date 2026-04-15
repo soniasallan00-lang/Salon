@@ -1,0 +1,196 @@
+{% extends 'myapp/base.html' %}
+{% load static %}
+
+{% block title %}Meet Our Team | The Better Feel{% endblock %}
+
+{% block extra_css %}
+<style>
+    .team-hero {
+        padding: 180px 0 80px;
+        text-align: center;
+        background: linear-gradient(rgba(31, 28, 26, 0.65), rgba(31, 28, 26, 0.65)), url("{% static 'images/background.jpg' %}") center/cover no-repeat;
+        color: white;
+    }
+
+    .team-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 50px;
+        margin-bottom: 100px;
+    }
+
+    .team-card {
+        background: white;
+        border-radius: 40px;
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .team-card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .team-img-wrapper {
+        height: 400px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .team-img-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 1s ease;
+    }
+
+    .team-card:hover .team-img-wrapper img {
+        transform: scale(1.1);
+    }
+
+    .team-info {
+        padding: 40px;
+        text-align: center;
+    }
+
+    .team-info span {
+        display: block;
+        color: var(--primary);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-size: 0.8rem;
+        margin-bottom: 10px;
+    }
+
+    .team-info h3 {
+        font-size: 1.8rem;
+        margin-bottom: 15px;
+    }
+
+    .team-info p {
+        font-size: 0.95rem;
+        color: var(--text-muted);
+        line-height: 1.6;
+        margin-bottom: 25px;
+    }
+
+    .social-links {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+    }
+
+    .social-links a {
+        color: #ddd;
+        font-size: 1.2rem;
+        transition: var(--transition);
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background: var(--bg-offset);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--secondary);
+    }
+
+    .social-links a:hover {
+        background: var(--primary);
+        color: white;
+        transform: translateY(-3px);
+    }
+
+    .join-team {
+        background: var(--secondary);
+        border-radius: 30px;
+        padding: 60px 30px;
+        text-align: center;
+        color: white;
+        margin-bottom: 80px;
+    }
+
+    @media (max-width: 768px) {
+        .team-hero { padding: 140px 0 60px; }
+        .team-hero h1 { font-size: 2.4rem !important; }
+        .team-grid { grid-template-columns: 1fr; gap: 30px; }
+        .team-img-wrapper { height: 300px; }
+        .join-team h2 { font-size: 1.8rem !important; }
+    }
+
+    @media (max-width: 480px) {
+        .team-hero h1 { font-size: 2rem !important; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="team-hero">
+    <div class="container">
+        <span class="text-gold" style="text-transform: uppercase; letter-spacing: 5px; font-weight: 700; color: #d4af37;">Curators of Beauty</span>
+        <h1 class="font-serif" style="font-size: 4rem; margin: 20px 0; color: #ffffff;">The Artists Behind the Magic</h1>
+        <p style="max-width: 600px; margin: 0 auto; color: rgba(255,255,255,0.8);">Meet the visionaries dedicated to transforming your natural beauty into a masterpiece.</p>
+    </div>
+</section>
+
+<section style="margin-top: -40px;">
+    <div class="container">
+        <div class="team-grid">
+            
+            <div class="team-card" data-aos>
+                <div class="team-img-wrapper">
+                    <img src="{% static 'images/WhatsApp Image 2026-04-09 at 9.34.11 PM.jpeg' %}" alt="Emma Laurent">
+                </div>
+                <div class="team-info">
+                    <span>Founder & Creative Director</span>
+                    <h3 class="font-serif">Jasspreet singh</h3>
+                    <p>With 18 years of expertise, jaspreet founded this sanctuary to push the boundaries of editorial styling and hair artistry.</p>
+                    <div class="social-links">
+                        <a href="https://www.instagram.com/thebetterfeelunisexsalon1?igsh=ZHRodmRiYzlidnRm"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.instagram.com/thebetterfeelunisexsalon1?igsh=ZHRodmRiYzlidnRm"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="team-card" data-aos>
+                <div class="team-img-wrapper">
+                    <img src="{% static 'images/WhatsApp Image 2026-04-10 at 2.28.06 PM.jpeg' %}" alt="Michael Chen">
+                </div>
+                <div class="team-info">
+                    <span>Master Colorist</span>
+                    <h3 class="font-serif">Rajveer </h3>
+                    <p>Specializing in multidimensional balayage and corrective coloring, Michael brings a scientific precision to every shade.</p>
+                    <div class="social-links">
+                        <a href="https://www.instagram.com/thebetterfeelunisexsalon1?igsh=ZHRodmRiYzlidnRm"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.instagram.com/thebetterfeelunisexsalon1?igsh=ZHRodmRiYzlidnRm"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="team-card" data-aos>
+                <div class="team-img-wrapper">
+                    <img src="{% static 'images/pexels-toni-guy-pondicherry-404397363-20046788.jpg' %}" alt="Sophia Rivera">
+                </div>
+                <div class="team-info">
+                    <span>Nails,Makeup Arts</span>
+                    <h3 class="font-serif">Love</h3>
+                    <p>Sophia blends ancient holistic rituals with modern skin science to deliver a glow that transcends the surface.</p>
+                    <div class="social-links">
+                        <a href="https://www.instagram.com/thebetterfeelunisexsalon1?igsh=ZHRodmRiYzlidnRm"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.instagram.com/thebetterfeelunisexsalon1?igsh=ZHRodmRiYzlidnRm"><i class="fab fa-tiktok"></i></a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="join-team" data-aos>
+            <h2 class="font-serif" style="font-size: 2.5rem; margin-bottom: 20px;">Join Our Collective</h2>
+            <p style="opacity: 0.8; max-width: 600px; margin: 0 auto 40px;">Are you a visionary artist seeking a premium creative space? We are always looking for passionate stylists and therapists.</p>
+            <a href="{% url 'contact' %}" class="btn btn-primary">Work With Us</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

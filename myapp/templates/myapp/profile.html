@@ -1,0 +1,368 @@
+{% extends 'myapp/base.html' %}
+{% load static %}
+
+{% block title %}Client Sanctuary | The Better Feel{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --profile-bg: #faf9f6;
+        --sidebar-bg: #ffffff;
+    }
+
+    body {
+        background-color: var(--profile-bg);
+    }
+
+    .sanctuary-wrapper {
+        display: flex;
+        min-height: calc(100vh - 80px);
+        margin-top: 80px;
+        gap: 20px;
+        padding: 40px;
+    }
+
+    /* Sidebar Navigation */
+    .sanctuary-sidebar {
+        width: 320px;
+        background: var(--sidebar-bg);
+        border-radius: 40px;
+        padding: 40px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.03);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .user-brief {
+        text-align: center;
+        margin-bottom: 50px;
+    }
+
+    .initial-circle {
+        width: 100px;
+        height: 100px;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        color: white;
+        border-radius: 50%;
+        margin: 0 auto 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        font-family: 'Playfair Display', serif;
+        box-shadow: 0 10px 20px rgba(194,161,91,0.2);
+    }
+
+    .sidebar-menu {
+        list-style: none;
+        flex-grow: 1;
+    }
+
+    .sidebar-menu li {
+        margin-bottom: 15px;
+    }
+
+    .sidebar-menu a {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 15px 25px;
+        border-radius: 20px;
+        color: var(--secondary);
+        text-decoration: none;
+        font-weight: 500;
+        transition: var(--transition);
+        font-size: 0.95rem;
+    }
+
+    .sidebar-menu a:hover, .sidebar-menu a.active {
+        background: var(--bg-offset);
+        color: var(--primary);
+        transform: translateX(5px);
+    }
+
+    /* Main Dashboard Area */
+    .sanctuary-main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    .welcome-banner {
+        background: linear-gradient(135deg, var(--secondary) 0%, #3a322b 100%), url('{% static "images/background.jpg" %}');
+        background-blend-mode: overlay;
+        background-size: cover;
+        border-radius: 40px;
+        padding: 60px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .welcome-banner::after {
+        content: 'B';
+        position: absolute;
+        right: -20px;
+        bottom: -50px;
+        font-size: 20rem;
+        font-family: 'Playfair Display', serif;
+        opacity: 0.05;
+        font-weight: 700;
+    }
+
+    .dash-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 30px;
+    }
+
+    .dashboard-card {
+        background: white;
+        border-radius: 40px;
+        padding: 40px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.02);
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    .card-header h4 {
+        font-size: 1.4rem;
+        font-family: 'Playfair Display', serif;
+    }
+
+    .profile-info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 25px;
+    }
+
+    .info-box {
+        padding: 20px;
+        border-radius: 25px;
+        background: var(--bg-offset);
+        border: 1px solid rgba(0,0,0,0.02);
+    }
+
+    .info-box label {
+        display: block;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-bottom: 5px;
+    }
+
+    .info-box p {
+        font-weight: 600;
+        color: var(--secondary);
+    }
+
+    .membership-tier {
+        background: radial-gradient(circle at top left, #fff 0%, #fafafa 100%);
+        border: 1px solid var(--accent);
+        text-align: center;
+        padding: 40px;
+    }
+
+    .tier-badge {
+        font-size: 4rem;
+        color: var(--primary);
+        margin-bottom: 20px;
+    }
+
+    .point-tracker {
+        height: 8px;
+        background: #eee;
+        border-radius: 10px;
+        margin: 20px 0;
+        overflow: hidden;
+    }
+
+    .point-progress {
+        height: 100%;
+        background: var(--primary);
+        width: 65%;
+    }
+
+    @media (max-width: 1200px) {
+        .sanctuary-wrapper { flex-direction: column; padding: 20px; }
+        .sanctuary-sidebar { width: 100%; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: 24px 30px; }
+        .user-brief { margin-bottom: 0; display: flex; align-items: center; gap: 16px; text-align: left; }
+        .initial-circle { width: 60px; height: 60px; font-size: 1.5rem; margin: 0; }
+        .sidebar-menu { display: flex; flex-wrap: wrap; gap: 8px; flex-grow: unset; }
+        .sidebar-menu li { margin-bottom: 0; }
+        .sidebar-menu a { padding: 10px 16px; border-radius: 12px; font-size: 0.82rem; }
+        .sidebar-menu a:hover { transform: none; }
+        .dash-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 768px) {
+        .sanctuary-wrapper { padding: 14px; gap: 14px; margin-top: 70px; }
+        .sanctuary-sidebar { padding: 18px; border-radius: 20px; }
+        .user-brief { gap: 12px; }
+        .initial-circle { width: 48px; height: 48px; font-size: 1.2rem; }
+        .sidebar-menu a { padding: 8px 12px; font-size: 0.78rem; gap: 8px; }
+        .welcome-banner { padding: 36px 24px; border-radius: 24px; }
+        .welcome-banner h1 { font-size: 1.8rem !important; }
+        .dashboard-card { padding: 24px; border-radius: 24px; }
+        .profile-info-grid { grid-template-columns: 1fr; gap: 14px; }
+        .membership-tier { padding: 28px 20px; }
+    }
+
+    @media (max-width: 480px) {
+        .sanctuary-sidebar { flex-direction: column; align-items: flex-start; }
+        .sidebar-menu { width: 100%; }
+        .sidebar-menu a { width: 100%; }
+        .welcome-banner h1 { font-size: 1.5rem !important; }
+        .profile-info-grid { grid-template-columns: 1fr; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="sanctuary-wrapper">
+    <!-- Sidebar -->
+    <aside class="sanctuary-sidebar" data-aos="fade-right">
+        <div class="user-brief">
+            <div class="initial-circle">{{ user.username|first|upper }}</div>
+            <h3 class="font-serif" style="font-size: 1.5rem;">{{ user.username }}</h3>
+            <p style="font-size: 0.8rem; color: var(--text-muted);">{{ user.email|default:"Member Profile" }}</p>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li><a href="#" class="active"><i class="fas fa-th-large"></i> Dashboard Overview</a></li>
+            <li><a href="{% url 'booking' %}"><i class="fas fa-calendar-check"></i> My Appointments</a></li>
+            <li><a href="#"><i class="fas fa-history"></i> Beauty History</a></li>
+            <li><a href="#"><i class="fas fa-gem"></i> Rewards & Offers</a></li>
+            <li><a href="#"><i class="fas fa-cog"></i> Account Settings</a></li>
+        </ul>
+
+        <div style="margin-top: 50px;">
+            <a href="{% url 'logout' %}" class="btn btn-outline" style="width: 100%; border-color: #eee; color: #999;">
+                <i class="fas fa-sign-out-alt"></i> Logout Session
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="sanctuary-main">
+        <header class="welcome-banner" data-aos="fade-down">
+            <h1 class="font-serif" style="font-size: 3rem; margin-bottom: 10px;">Welcome to Your Sanctuary</h1>
+            <p style="opacity: 0.9;">Luxury is a journey, and you are at the heart of ours. <br>Your next transformation awaits.</p>
+        </header>
+
+        <div class="dash-grid">
+            <div class="dashboard-card" data-aos="fade-up">
+                <div class="card-header">
+                    <h4>Personal Profile</h4>
+                    <a href="{% url 'profile_edit' %}" class="text-gold" style="font-size: 0.9rem; font-weight: 500;">Edit Details</a>
+                </div>
+                
+                <div class="profile-info-grid">
+                    <div class="info-box">
+                        <label>Member Identity</label>
+                        <p>{{ user.username }}</p>
+                    </div>
+                    <div class="info-box">
+                        <label>Full Name</label>
+                        <p>{{ user.get_full_name|default:"Not set" }}</p>
+                    </div>
+                    <div class="info-box">
+                        <label>Email Address</label>
+                        <p>{{ user.email|default:"Not provided" }}</p>
+                    </div>
+                    <div class="info-box">
+                        <label>Phone Number</label>
+                        <p>{{ profile.phone|default:"Not provided" }}</p>
+                    </div>
+                    <div class="info-box">
+                        <label>Member Since</label>
+                        <p>{{ user.date_joined|date:"d M, Y" }}</p>
+                    </div>
+                    <div class="info-box">
+                        <label>Address</label>
+                        <p>{{ profile.address|default:"Not provided" }}</p>
+                    </div>
+                </div>
+
+                <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid rgba(0,0,0,0.05);">
+                    <h5 style="text-transform: uppercase; font-size: 0.75rem; letter-spacing: 2px; margin-bottom: 20px; color: var(--primary);">Upcoming Rituals</h5>
+                    {% if bookings %}
+                        {% for booking in bookings %}
+                            <div class="premium-card" style="padding: 25px; border-radius: 30px; display: flex; align-items: center; gap: 20px; margin-bottom: 15px;
+                                {% if booking.status == 'Rejected' %}opacity:0.75; border-left:4px solid #dc2626;
+                                {% elif booking.status == 'Confirmed' %}border-left:4px solid #16a34a;
+                                {% elif booking.status == 'Pending' %}border-left:4px solid #ca8a04;
+                                {% endif %}">
+                                <div style="width:60px;height:60px;background:var(--bg-offset);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;
+                                    color:{% if booking.status == 'Rejected' %}#dc2626{% elif booking.status == 'Confirmed' %}#16a34a{% else %}var(--primary){% endif %};">
+                                    <i class="fas {% if 'Hair' in booking.service or 'Beard' in booking.service %}fa-cut{% elif 'Spa' in booking.service or 'Massage' in booking.service %}fa-spa{% elif 'Makeup' in booking.service %}fa-magic{% elif 'Nail' in booking.service or 'Manicure' in booking.service %}fa-hand-sparkles{% else %}fa-star{% endif %}"></i>
+                                </div>
+                                <div style="flex:1;">
+                                    <p style="font-weight:600;color:var(--secondary);">{{ booking.service }}</p>
+                                    <p style="font-size:0.85rem;color:var(--text-muted);"><i class="far fa-calendar-alt"></i> {{ booking.date|date:"F j, Y" }} at {{ booking.time|time:"h:i A" }}</p>
+                                    {% if booking.booking_id %}
+                                    <p style="font-size:0.72rem;color:#bbb;font-family:monospace;margin-top:3px;">{{ booking.booking_id }}</p>
+                                    {% endif %}
+                                    {% if booking.status == 'Rejected' and booking.payment_method != 'cash' %}
+                                    <p style="font-size:0.78rem;color:#16a34a;margin-top:6px;display:flex;align-items:center;gap:5px;">
+                                        <i class="fas fa-undo-alt"></i> Refund initiated — amount will be returned within 5–7 business days.
+                                    </p>
+                                    {% endif %}
+                                </div>
+                                <div style="text-align:right;flex-shrink:0;">
+                                    {% if booking.status == 'Confirmed' %}
+                                        <span style="display:inline-flex;align-items:center;gap:5px;font-size:0.7rem;font-weight:700;background:#dcfce7;color:#16a34a;padding:4px 12px;border-radius:20px;">
+                                            <i class="fas fa-check-circle"></i> CONFIRMED
+                                        </span>
+                                    {% elif booking.status == 'Rejected' %}
+                                        <span style="display:inline-flex;align-items:center;gap:5px;font-size:0.7rem;font-weight:700;background:#fee2e2;color:#dc2626;padding:4px 12px;border-radius:20px;">
+                                            <i class="fas fa-times-circle"></i> REJECTED
+                                        </span>
+                                    {% elif booking.status == 'Pending' %}
+                                        <span style="display:inline-flex;align-items:center;gap:5px;font-size:0.7rem;font-weight:700;background:#fef9c3;color:#ca8a04;padding:4px 12px;border-radius:20px;">
+                                            <i class="fas fa-clock"></i> PENDING
+                                        </span>
+                                    {% else %}
+                                        <span style="display:inline-flex;align-items:center;gap:5px;font-size:0.7rem;font-weight:700;background:#f3f4f6;color:#6b7280;padding:4px 12px;border-radius:20px;">
+                                            {{ booking.status|upper }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="premium-card" style="padding: 40px; text-align: center; background: var(--bg-offset); border: 1px dashed rgba(0,0,0,0.1); border-radius: 30px;">
+                            <p style="color: var(--text-muted);">No upcoming rituals scheduled.</p>
+                            <a href="{% url 'booking' %}" class="text-gold" style="font-weight: 600; text-decoration: none; margin-top: 10px; display: inline-block;">Book your first session →</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="dashboard-card membership-tier" data-aos="fade-up" data-aos-delay="100">
+                <div class="tier-badge">
+                    <i class="fas fa-crow"></i>
+                </div>
+                <h4 class="font-serif">Gold Status</h4>
+                <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 5px;">Platinum Tier at 500 Points</p>
+                
+                <div class="point-tracker">
+                    <div class="point-progress"></div>
+                </div>
+                
+                <p style="font-weight: 700; font-size: 1.4rem; color: var(--secondary);">325 <span style="font-size: 0.8rem; font-weight: 500; color: #999;">Points</span></p>
+                
+                <button class="btn btn-primary" style="width: 100%; margin-top: 30px; padding: 15px;">Redeem Rewards</button>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

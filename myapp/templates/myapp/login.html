@@ -1,0 +1,265 @@
+{% extends 'myapp/base.html' %}
+{% load static %}
+
+{% block title %}Sign In | The Better Feel{% endblock %}
+{% block navbar %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .auth-page-container {
+        display: flex;
+        min-height: 100vh;
+        background: #fffefb;
+    }
+
+    .auth-visual {
+        flex: 1;
+        background: linear-gradient(rgba(31,28,26,0.45), rgba(31,28,26,0.45)),
+                    url("{% static 'images/pexels-svliiim-34835305.jpg' %}") center/cover no-repeat;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 80px;
+        color: white;
+    }
+    .auth-visual h2 { font-size: 3.5rem; margin-bottom: 20px; line-height: 1.1; }
+    .auth-visual p  { font-size: 1.1rem; opacity: 0.85; max-width: 480px; }
+
+    .auth-form-side {
+        width: 580px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 60px 50px;
+    }
+
+    .form-content-wrapper { width: 100%; max-width: 400px; }
+
+    .auth-logo { margin-bottom: 36px; }
+    .auth-logo h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        color: var(--secondary);
+    }
+    .auth-logo span { color: var(--primary); }
+
+    /* Toggle */
+    .login-toggle {
+        display: flex;
+        background: #f4f2ee;
+        border-radius: 14px;
+        padding: 5px;
+        margin-bottom: 36px;
+        position: relative;
+    }
+    .toggle-btn {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        background: transparent;
+        border-radius: 10px;
+        font-family: inherit;
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
+        color: #999;
+        transition: all 0.25s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        z-index: 1;
+        position: relative;
+    }
+    .toggle-btn.active {
+        background: white;
+        color: var(--secondary);
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+    .toggle-btn.active.admin-btn { color: var(--primary); }
+
+    .form-header { margin-bottom: 32px; }
+    .form-header h3 { font-size: 1.8rem; margin-bottom: 6px; color: var(--secondary); }
+    .form-header p  { color: #aaa; font-size: 0.9rem; }
+
+    .custom-input-group { margin-bottom: 22px; position: relative; }
+    .custom-input-group label {
+        display: block;
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+        color: var(--secondary);
+    }
+    .custom-input {
+        width: 100%;
+        padding: 14px 0;
+        border: none;
+        border-bottom: 1.5px solid rgba(0,0,0,0.1);
+        background: transparent;
+        font-family: inherit;
+        font-size: 1rem;
+        transition: all 0.2s;
+        outline: none;
+        box-sizing: border-box;
+    }
+    .custom-input:focus { border-bottom-color: var(--primary); }
+
+    .auth-btn {
+        width: 100%;
+        padding: 18px;
+        border: none;
+        font-weight: 700;
+        font-size: 0.95rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.25s;
+        margin-top: 10px;
+        font-family: inherit;
+        border-radius: 4px;
+    }
+    .auth-btn.user-btn  { background: var(--secondary); color: white; }
+    .auth-btn.admin-btn { background: linear-gradient(135deg, var(--primary), #a8873d); color: white; }
+    .auth-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
+
+    /* Admin badge on form */
+    .admin-badge {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(194,161,91,0.08);
+        border: 1px solid rgba(194,161,91,0.25);
+        border-radius: 12px;
+        padding: 12px 16px;
+        margin-bottom: 28px;
+        font-size: 0.82rem;
+        color: #a8873d;
+    }
+    .admin-badge i { font-size: 1rem; color: var(--primary); }
+
+    @media (max-width: 1100px) {
+        .auth-visual { display: none; }
+        .auth-form-side { width: 100%; padding: 40px 24px; }
+    }
+
+    @media (max-width: 480px) {
+        .auth-form-side { padding: 30px 18px; }
+        .auth-logo h1 { font-size: 1.6rem; }
+        .login-toggle { margin-bottom: 24px; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-page-container">
+
+    <div class="auth-visual">
+        <h2 class="font-serif">The Art of<br>Personal Expression</h2>
+        <p>Return to your sanctuary. Sign in to continue your journey through our world of curated beauty.</p>
+    </div>
+
+    <div class="auth-form-side">
+        <div class="form-content-wrapper">
+
+            <div class="auth-logo">
+                <a href="{% url 'home' %}" style="text-decoration:none;">
+                    <h1>The Better Feel <span>& Salon</span></h1>
+                </a>
+            </div>
+
+            <!-- Toggle -->
+            <div class="login-toggle">
+                <button type="button" class="toggle-btn active" id="userToggle" onclick="switchMode('user')">
+                    <i class="fas fa-user"></i> Client Login
+                </button>
+                <button type="button" class="toggle-btn admin-btn" id="adminToggle" onclick="switchMode('admin')">
+                    <i class="fas fa-shield-alt"></i> Admin Login
+                </button>
+            </div>
+
+            <!-- Dynamic header -->
+            <div class="form-header">
+                <h3 id="formTitle">Welcome Back</h3>
+                <p id="formSubtitle">Enter your details to access your account</p>
+            </div>
+
+            <!-- Admin badge (hidden by default) -->
+            <div class="admin-badge" id="adminBadge" style="display:none;">
+                <i class="fas fa-lock"></i>
+                Restricted access — admin credentials only
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                <div style="background:#fee2e2; color:#dc2626; padding:12px 16px; border-radius:10px; font-size:0.85rem; margin-bottom:20px; display:flex; align-items:center; gap:8px;">
+                    <i class="fas fa-exclamation-circle"></i> {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="POST" action="{% url 'login' %}">
+                {% csrf_token %}
+                <input type="hidden" name="login_type" id="loginTypeInput" value="user">
+
+                <div class="custom-input-group">
+                    <label>Username</label>
+                    <input type="text" name="username" class="custom-input" placeholder="Enter your username" required>
+                </div>
+
+                <div class="custom-input-group">
+                    <label>Password</label>
+                    <input type="password" name="password" class="custom-input" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="auth-btn user-btn" id="submitBtn">
+                    Sign In to Sanctuary
+                </button>
+            </form>
+
+            <p id="registerLink" style="text-align:center; margin-top:36px; font-size:0.88rem; color:#aaa;">
+                Don't have an account?
+                <a href="{% url 'register' %}" style="color:var(--primary); font-weight:600; text-decoration:none;">Create one here</a>
+            </p>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    function switchMode(mode) {
+        const userToggle  = document.getElementById('userToggle');
+        const adminToggle = document.getElementById('adminToggle');
+        const loginInput  = document.getElementById('loginTypeInput');
+        const title       = document.getElementById('formTitle');
+        const subtitle    = document.getElementById('formSubtitle');
+        const adminBadge  = document.getElementById('adminBadge');
+        const submitBtn   = document.getElementById('submitBtn');
+        const registerLink = document.getElementById('registerLink');
+
+        if (mode === 'admin') {
+            adminToggle.classList.add('active');
+            userToggle.classList.remove('active');
+            loginInput.value = 'admin';
+            title.textContent = 'Admin Access';
+            subtitle.textContent = 'Restricted to authorised personnel only';
+            adminBadge.style.display = 'flex';
+            submitBtn.className = 'auth-btn admin-btn';
+            submitBtn.textContent = 'Enter Admin Panel';
+            registerLink.style.display = 'none';
+        } else {
+            userToggle.classList.add('active');
+            adminToggle.classList.remove('active');
+            loginInput.value = 'user';
+            title.textContent = 'Welcome Back';
+            subtitle.textContent = 'Enter your details to access your account';
+            adminBadge.style.display = 'none';
+            submitBtn.className = 'auth-btn user-btn';
+            submitBtn.textContent = 'Sign In to Sanctuary';
+            registerLink.style.display = 'block';
+        }
+    }
+</script>
+{% endblock %}

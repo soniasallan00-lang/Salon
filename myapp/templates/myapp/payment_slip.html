@@ -1,0 +1,372 @@
+{% extends 'myapp/base.html' %}
+{% load static %}
+
+{% block title %}Booking Confirmed | The Better Feel{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary: #c2a15b;
+        --secondary: #1a1a2e;
+        --bg-main: #fdf8f2;
+    }
+
+    .slip-wrapper {
+        padding: 160px 0 100px;
+        background: radial-gradient(circle at top right, rgba(194,161,91,0.1) 0%, var(--bg-main) 60%);
+        min-height: 100vh;
+    }
+
+    .slip-container {
+        max-width: 680px;
+        margin: 0 auto;
+    }
+
+    /* Success banner */
+    .success-banner {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    .success-icon {
+        width: 80px; height: 80px;
+        background: linear-gradient(135deg, #16a34a, #22c55e);
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 20px;
+        box-shadow: 0 10px 30px rgba(34,197,94,0.3);
+        animation: popIn 0.5s ease;
+    }
+    @keyframes popIn {
+        0% { transform: scale(0); opacity: 0; }
+        70% { transform: scale(1.1); }
+        100% { transform: scale(1); opacity: 1; }
+    }
+    .success-icon i { font-size: 2rem; color: white; }
+    .success-banner h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.2rem;
+        color: var(--secondary);
+        margin-bottom: 8px;
+    }
+    .success-banner p { color: #888; font-size: 1rem; }
+
+    /* Slip card */
+    .slip-card {
+        background: white;
+        border-radius: 30px;
+        overflow: hidden;
+        box-shadow: 0 25px 70px rgba(0,0,0,0.1);
+    }
+
+    .slip-header {
+        background: linear-gradient(135deg, var(--secondary), #2d2d4e);
+        padding: 35px 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .slip-header .brand h2 {
+        font-family: 'Playfair Display', serif;
+        color: var(--primary);
+        font-size: 1.4rem;
+        margin-bottom: 4px;
+    }
+    .slip-header .brand p { color: rgba(255,255,255,0.5); font-size: 0.8rem; }
+    .slip-header .receipt-no {
+        text-align: right;
+        color: rgba(255,255,255,0.6);
+        font-size: 0.8rem;
+    }
+    .slip-header .receipt-no strong { color: var(--primary); font-size: 1rem; display: block; }
+
+    /* Divider with scissors */
+    .slip-divider {
+        display: flex;
+        align-items: center;
+        padding: 0 30px;
+        position: relative;
+    }
+    .slip-divider::before, .slip-divider::after {
+        content: '';
+        flex: 1;
+        border-top: 2px dashed #e8e8e8;
+    }
+    .slip-divider i {
+        margin: 0 12px;
+        color: #ccc;
+        font-size: 1rem;
+        transform: rotate(90deg);
+    }
+
+    .slip-body { padding: 35px 40px; }
+
+    .slip-section-title {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--primary);
+        font-weight: 700;
+        margin-bottom: 18px;
+    }
+
+    .slip-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid #f5f5f5;
+    }
+    .slip-row:last-child { border-bottom: none; }
+    .slip-row .lbl { color: #888; font-size: 0.88rem; }
+    .slip-row .val { font-weight: 600; color: var(--secondary); font-size: 0.95rem; }
+    .slip-row .val.highlight { color: var(--primary); font-size: 1.1rem; }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #dcfce7;
+        color: #16a34a;
+        padding: 5px 14px;
+        border-radius: 20px;
+        font-size: 0.82rem;
+        font-weight: 700;
+    }
+
+    .payment-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #eff6ff;
+        color: #2563eb;
+        padding: 5px 14px;
+        border-radius: 20px;
+        font-size: 0.82rem;
+        font-weight: 600;
+    }
+
+    .slip-total {
+        background: linear-gradient(135deg, #fffbf0, #fff5d6);
+        border: 1.5px solid rgba(194,161,91,0.3);
+        border-radius: 16px;
+        padding: 20px 25px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 25px 0;
+    }
+    .slip-total .total-lbl { color: #888; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
+    .slip-total .total-amount {
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        color: var(--primary);
+        font-weight: 700;
+    }
+
+    .slip-footer {
+        background: #fafaf8;
+        padding: 25px 40px;
+        text-align: center;
+        border-top: 1px solid #f0f0f0;
+    }
+    .slip-footer p { color: #aaa; font-size: 0.82rem; line-height: 1.7; }
+    .slip-footer strong { color: var(--secondary); }
+
+    /* Action buttons */
+    .slip-actions {
+        display: flex;
+        gap: 16px;
+        margin-top: 30px;
+        justify-content: center;
+    }
+    .btn-print {
+        padding: 14px 30px;
+        background: var(--secondary);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: inherit;
+        transition: all 0.3s;
+        display: flex; align-items: center; gap: 8px;
+        text-decoration: none;
+    }
+    .btn-print:hover { background: #2d2d4e; transform: translateY(-2px); }
+    .btn-profile {
+        padding: 14px 30px;
+        background: linear-gradient(135deg, var(--primary), #a8873d);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: inherit;
+        transition: all 0.3s;
+        display: flex; align-items: center; gap: 8px;
+        text-decoration: none;
+    }
+    .btn-profile:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(194,161,91,0.4); }
+
+    @media print {
+        .slip-wrapper { padding: 0; background: white; }
+        .slip-actions, nav, footer { display: none !important; }
+        .success-banner { margin-bottom: 20px; }
+        .slip-card { box-shadow: none; border: 1px solid #ddd; }
+    }
+
+    @media (max-width: 600px) {
+        .slip-wrapper { padding: 120px 0 60px; }
+        .slip-header { flex-direction: column; gap: 12px; text-align: center; }
+        .slip-header .receipt-no { text-align: center; }
+        .slip-body { padding: 24px 18px; }
+        .slip-footer { padding: 20px 18px; }
+        .slip-actions { flex-direction: column; }
+        .btn-print, .btn-profile { justify-content: center; }
+        .success-banner h1 { font-size: 1.7rem; }
+        .slip-total .total-amount { font-size: 1.6rem; }
+    }
+
+    @media (max-width: 380px) {
+        .slip-row { flex-direction: column; gap: 4px; align-items: flex-start; }
+        .slip-row .val { text-align: left; max-width: 100%; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="slip-wrapper">
+    <div class="container slip-container">
+
+        <div class="success-banner">
+            <div class="success-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            <h1>Booking Confirmed!</h1>
+            <p>Your luxury ritual has been reserved. See you soon.</p>
+        </div>
+
+        <div class="slip-card">
+            <!-- Header -->
+            <div class="slip-header">
+                <div class="brand">
+                    <h2>The Better Feel</h2>
+                    <p>& Unisex Salon, Bhogpur</p>
+                </div>
+                <div class="receipt-no">
+                    <span>Receipt No.</span>
+                    <strong>#{{ receipt_no }}</strong>
+                    <span style="display:block; margin-top:4px;">{{ booking.created_at|date:"d M Y, h:i A" }}</span>
+                </div>
+            </div>
+
+            <!-- Dashed divider -->
+            <div class="slip-divider"><i class="fas fa-cut"></i></div>
+
+            <!-- Body -->
+            <div class="slip-body">
+
+                <div class="slip-section-title">Appointment Details</div>
+
+                <div class="slip-row">
+                    <span class="lbl">Service</span>
+                    <span class="val">{{ booking.service }}</span>
+                </div>
+                <div class="slip-row">
+                    <span class="lbl">Date</span>
+                    <span class="val">{{ booking.date|date:"l, d F Y" }}</span>
+                </div>
+                <div class="slip-row">
+                    <span class="lbl">Time</span>
+                    <span class="val">{{ booking.time|time:"h:i A" }}</span>
+                </div>
+                <div class="slip-row">
+                    <span class="lbl">Client</span>
+                    <span class="val">{{ booking.user.get_full_name|default:booking.user.username }}</span>
+                </div>
+                <div class="slip-row">
+                    <span class="lbl">Booking ID</span>
+                    <span class="val" style="font-family: monospace; color: var(--primary);">{{ booking.booking_id }}</span>
+                </div>
+                <div class="slip-row">
+                    <span class="lbl">Status</span>
+                    <span class="val"><span class="status-badge"><i class="fas fa-check-circle"></i> {{ booking.status }}</span></span>
+                </div>
+
+                <div class="slip-total">
+                    <div>
+                        <div class="total-lbl">Estimated Total</div>
+                        <div class="total-amount">₹{{ booking.price|default:"—" }}</div>
+                    </div>
+                    <i class="fas fa-gem" style="font-size:2rem; color:var(--primary); opacity:0.6;"></i>
+                </div>
+
+                <div class="slip-section-title">Payment Information</div>
+
+                <div class="slip-row">
+                    <span class="lbl">Payment Method</span>
+                    <span class="val">
+                        <span class="payment-badge">
+                            {% if booking.payment_method == 'credit_card' %}
+                                <i class="fas fa-credit-card"></i> Credit / Debit Card
+                            {% elif booking.payment_method == 'upi' %}
+                                <i class="fas fa-mobile-alt"></i> UPI
+                            {% else %}
+                                <i class="fas fa-money-bill-wave"></i> Cash at Salon
+                            {% endif %}
+                        </span>
+                    </span>
+                </div>
+                <div class="slip-row">
+                    <span class="lbl">Transaction ID</span>
+                    <span class="val" style="font-family: monospace; font-size: 0.85rem;">
+                        {% if booking.transaction_id %}{{ booking.transaction_id }}{% else %}—{% endif %}
+                    </span>
+                </div>
+                <div class="slip-row">
+                    <span class="lbl">Payment Status</span>
+                    <span class="val">
+                        {% if booking.payment_method == 'cash' %}
+                            <span style="color:#f59e0b; font-weight:600;"><i class="fas fa-clock"></i> Pay at Salon</span>
+                        {% else %}
+                            <span class="status-badge"><i class="fas fa-check-circle"></i> Demo Paid</span>
+                        {% endif %}
+                    </span>
+                </div>
+
+                {% if booking.notes %}
+                <div style="margin-top:20px;">
+                    <div class="slip-section-title">Special Requests</div>
+                    <p style="color:#666; font-size:0.9rem; line-height:1.6; background:#fafaf8; padding:14px 18px; border-radius:12px;">{{ booking.notes }}</p>
+                </div>
+                {% endif %}
+
+            </div>
+
+            <!-- Footer -->
+            <div class="slip-footer">
+                <p>
+                    <strong>The Better Feel & Unisex Salon</strong><br>
+                    Ghuman Market, Back Side Band of India, Bhogpur<br>
+                    <i class="fas fa-phone-alt" style="color:var(--primary)"></i> +91 9041585455 &nbsp;|&nbsp;
+                    <i class="fas fa-envelope" style="color:var(--primary)"></i> uniesxsalon@gmail.com
+                </p>
+                <p style="margin-top:10px; font-size:0.75rem;">Thank you for choosing us. This is a demo receipt — no real payment was processed.</p>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="slip-actions">
+            <button class="btn-print" onclick="window.print()">
+                <i class="fas fa-print"></i> Print Slip
+            </button>
+            <a href="{% url 'profile' %}" class="btn-profile">
+                <i class="fas fa-user"></i> View My Bookings
+            </a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

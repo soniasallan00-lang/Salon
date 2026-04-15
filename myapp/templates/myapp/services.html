@@ -1,0 +1,218 @@
+{% extends 'myapp/base.html' %}
+{% load static %}
+
+{% block title %}Services | The Better Feel{% endblock %}
+
+{% block extra_css %}
+<style>
+    .services-hero {
+        padding: 180px 0 100px;
+        background: linear-gradient(rgba(31, 28, 26, 0.55), rgba(31, 28, 26, 0.55)), url("{% static 'images/about.jpg' %}") center/cover no-repeat;
+        text-align: center;
+        color: white;
+    }
+
+    .menu-section {
+        margin-bottom: 100px;
+    }
+
+    .menu-header {
+        display: flex;
+        align-items: center;
+        gap: 30px;
+        margin-bottom: 50px;
+    }
+
+    .menu-header h2 {
+        font-size: 2.8rem;
+        white-space: nowrap;
+    }
+
+    .menu-header .line {
+        height: 1px;
+        background: var(--primary);
+        width: 100%;
+        opacity: 0.3;
+    }
+
+    .menu-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px 100px;
+    }
+
+    .menu-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        position: relative;
+    }
+
+    .item-info { width: 80%; }
+    .item-info h4 { font-size: 1.2rem; margin-bottom: 5px; }
+    .item-info p { font-size: 0.9rem; color: var(--text-muted); }
+
+    .item-price {
+        font-weight: 600;
+        color: var(--primary);
+        font-size: 1.1rem;
+    }
+
+    .menu-item::after {
+        content: '';
+        position: absolute;
+        bottom: 8px;
+        left: 0;
+        width: 100%;
+        border-bottom: 1px dotted rgba(0,0,0,0.1);
+        z-index: -1;
+    }
+
+    .item-info h4, .item-price {
+        background: var(--bg-main);
+        padding-right: 10px;
+    }
+
+    .item-price {
+        padding-left: 10px;
+        padding-right: 0;
+    }
+
+    @media (max-width: 992px) {
+        .menu-grid { grid-template-columns: 1fr; gap: 20px; }
+        .menu-header h2 { font-size: 2rem; white-space: normal; }
+    }
+
+    @media (max-width: 768px) {
+        .services-hero { padding: 140px 0 60px; }
+        .services-hero h1 { font-size: 3rem !important; }
+        .menu-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+        .menu-header .line { display: none; }
+    }
+
+    @media (max-width: 480px) {
+        .services-hero h1 { font-size: 2.2rem !important; }
+        .item-info h4 { font-size: 1rem; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="services-hero">
+    <div class="container">
+        <span class="text-gold" style="text-transform: uppercase; letter-spacing: 5px; font-weight: 700; color: #d4af37;">The Service Menu</span>
+        <h1 class="font-serif" style="font-size: 5rem; margin: 20px 0; color: #ffffff;">Artistry Catalog</h1>
+        <p style="max-width: 600px; margin: 0 auto; color: rgba(255,255,255,0.8);">Explore our curated range of elite beauty and grooming services designed to redefine your personal style.</p>
+    </div>
+</section>
+
+<section>
+    <div class="container">
+        
+        <!-- Hair Artistry -->
+        <div class="menu-section" data-aos>
+            <div class="menu-header">
+                <h2 class="font-serif">Hair Artistry</h2>
+                <div class="line"></div>
+            </div>
+            <div class="menu-grid">
+                <div class="menu-item">
+                    <div class="item-info">
+                        <h4>Designer Haircut</h4>
+                        <p>Consultation, precision cut, and signature blow-dry.</p>
+                    </div>
+                    <div class="item-price">₹275</div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <h4>Signature Balayage</h4>
+                        <p>Hand-painted highlights for a natural, sun-kissed glow.</p>
+                    </div>
+                    <div class="item-price">₹1,100</div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <h4>Keratin Smoothing</h4>
+                        <p>Advanced protein treatment for frizz-free, silky hair.</p>
+                    </div>
+                    <div class="item-price">₹2,100</div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <h4>Deep Conditioning</h4>
+                        <p>Intensive hydration ritual for stressed locks.</p>
+                    </div>
+                    <div class="item-price">₹500</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Spa Rituals -->
+        <div class="menu-section" data-aos>
+            <div class="menu-header">
+                <h2 class="font-serif">Spa Rituals</h2>
+                <div class="line"></div>
+            </div>
+            <div class="menu-grid">
+                <div class="menu-item">
+                    <div class="item-info">
+                        <h4>Signature Glow Facial</h4>
+                        <p>Deep cleansing and hydration for a radiant complexion.</p>
+                    </div>
+                    <div class="item-price">₹600</div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <h4>Aromatherapy Massage</h4>
+                        <p>60 minutes of pure essential oil-infused relaxation.</p>
+                    </div>
+                    <div class="item-price">₹1,200</div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <h4>Detox Body Scrub</h4>
+                        <p>Sea salt and mineral exfoliation for velvet-soft skin.</p>
+                    </div>
+                    <div class="item-price">₹800</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grooming for Men -->
+        <div class="menu-section" data-aos>
+            <div class="menu-header">
+                <h2 class="font-serif">Men's Grooming</h2>
+                <div class="line"></div>
+            </div>
+            <div class="menu-grid">
+                <div class="menu-item">
+                    <div class="item-info">
+                        <h4>Elite Beard Sculpting</h4>
+                        <p>Hot towel service, trim, and luxury oil finish.</p>
+                    </div>
+                    <div class="item-price">₹800</div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <h4>Traditional Shave</h4>
+                        <p>The ultimate close shave using classic straight razor techniques.</p>
+                    </div>
+                    <div class="item-price">₹100</div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <h4>Scalp Treatment</h4>
+                        <p>Invigorating massage and treatment for thinning hair.</p>
+                    </div>
+                    <div class="item-price">₹1,400</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center" style="margin-top: 50px;" data-aos>
+            <a href="{% url 'booking' %}" class="btn btn-primary">Book Your Transformation</a>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

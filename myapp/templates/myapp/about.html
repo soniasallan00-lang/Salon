@@ -1,0 +1,194 @@
+{% extends 'myapp/base.html' %}
+{% load static %}
+
+{% block title %}Our Story | The Better Feel{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        padding: 180px 0 100px;
+        background: var(--secondary);
+        color: white;
+        text-align: center;
+        background: linear-gradient(rgba(31, 28, 26, 0.7), rgba(31, 28, 26, 0.7)), url("{% static 'images/about.jpg' %}") center/cover;
+    }
+
+    .page-header h1 {
+        font-size: 4rem;
+        margin-bottom: 20px;
+    }
+
+    .page-header p {
+        font-size: 1.2rem;
+        opacity: 0.8;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .story-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 80px;
+        align-items: center;
+    }
+
+    .heritage-text h2 {
+        font-size: 2.5rem;
+        margin-bottom: 25px;
+    }
+
+    .heritage-text p {
+        margin-bottom: 20px;
+        color: var(--text-muted);
+    }
+
+    .value-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 30px;
+        margin-top: 60px;
+    }
+
+    .value-card {
+        text-align: center;
+        padding: 40px;
+        background: var(--bg-offset);
+        border-radius: 20px;
+        transition: var(--transition);
+    }
+
+    .value-card:hover {
+        background: white;
+        box-shadow: var(--shadow-md);
+        transform: translateY(-5px);
+    }
+
+    .value-card i {
+        font-size: 2.5rem;
+        color: var(--primary);
+        margin-bottom: 20px;
+    }
+
+    .team-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 40px;
+    }
+
+    .team-member {
+        position: relative;
+        text-align: center;
+    }
+
+    .team-img {
+        width: 100%;
+        aspect-ratio: 1;
+        border-radius: 30px;
+        overflow: hidden;
+        margin-bottom: 20px;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .team-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: var(--transition);
+    }
+
+    .team-member:hover .team-img img {
+        transform: scale(1.05);
+    }
+
+    .team-member h4 { font-size: 1.5rem; }
+    .team-member span { color: var(--primary); font-weight: 500; font-size: 0.9rem; text-transform: uppercase; }
+
+    @media (max-width: 768px) {
+        .story-grid { grid-template-columns: 1fr; gap: 40px; }
+        .page-header h1 { font-size: 2.4rem; }
+        .page-header { padding: 140px 0 70px; }
+        .heritage-text h2 { font-size: 2rem; }
+        .value-cards { grid-template-columns: 1fr; }
+        .team-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 480px) {
+        .page-header h1 { font-size: 2rem; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1 class="font-serif">Our Heritage</h1>
+        <p>A legacy of beauty, a future of elegance. Discover the heart behind The Better Feel.</p>
+    </div>
+</section>
+
+<section>
+    <div class="container">
+        <div class="story-grid">
+            <div class="heritage-img" data-aos>
+                <img src="{% static 'images/about.jpg' %}" alt="Salon legacy" style="width: 100%; border-radius: 40px; box-shadow: var(--shadow-lg);">
+            </div>
+            <div class="heritage-text" data-aos>
+                <div class="section-title" style="text-align: left;">
+                    <span class="text-gold">Established Excellence</span>
+                    <h2>Crafting Beauty Since 2018</h2>
+                    <div class="divider" style="margin: 20px 0;"></div>
+                </div>
+                <p>The Better Feel & Unisex Salon was founded with a singular vision: to create a sanctuary where luxury is accessible and every client is treated like a masterpiece. What started as a modest studio has evolved into a premier destination for those who seek the perfect blend of modern artistry and traditional warmth.</p>
+                <p>Our founder envisioned a space where innovation meets hospitality. Today, we are proud to house a collective of the region's finest stylists, therapists, and artists, all dedicated to the pursuit of perfection.</p>
+                <p>We use only the most prestigious products and the latest techniques to ensure that your experience is as transformative as it is relaxing.</p>
+            </div>
+        </div>
+
+        <div class="value-cards">
+            <div class="value-card" data-aos>
+                <i class="fas fa-gem"></i>
+                <h3>Excellence</h3>
+                <p>We settle for nothing less than perfection in every cut, color, and treatment.</p>
+            </div>
+            <div class="value-card" data-aos>
+                <i class="fas fa-heart"></i>
+                <h3>Integrity</h3>
+                <p>Transparent pricing and honest consultations are the pillars of our client relationships.</p>
+            </div>
+            <div class="value-card" data-aos>
+                <i class="fas fa-leaf"></i>
+                <h3>Sustainability</h3>
+                <p>We prioritize eco-friendly products that are as kind to the earth as they are to you.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section style="background: var(--bg-offset);">
+    <div class="container">
+        <div class="section-title" data-aos>
+            <span class="text-gold">The Collective</span>
+            <h2>Meet Our Artists</h2>
+            <div class="divider"></div>
+        </div>
+
+        <div class="team-grid">
+            <div class="team-member" data-aos>
+                <div class="team-img"><img src="{% static 'images/WhatsApp Image 2026-04-10 at 2.28.06 PM.jpeg' %}" alt="Stylist"></div>
+                <h4>Rajveer</h4>
+                <span>Master Stylist & Director</span>
+            </div>
+            <div class="team-member" data-aos>
+                <div class="team-img"><img src="{% static 'images/pexels-toni-guy-pondicherry-404397363-20046788.jpg' %}" alt="Stylist"></div>
+                <h4>love</h4>
+                <span>Skincare Specialist</span>
+            </div>
+            <div class="team-member" data-aos>
+                <div class="team-img"><img src="{% static 'images/WhatsApp Image 2026-04-09 at 9.34.11 PM.jpeg' %}" alt="Stylist"></div>
+                <h4>Jasspreet Singh</h4>
+                <span>Nail Art Director</span>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

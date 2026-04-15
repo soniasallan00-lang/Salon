@@ -1,0 +1,503 @@
+{% extends 'myapp/base.html' %}
+{% load static %}
+
+{% block title %}Complete Your Booking | The Better Feel{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary: #c2a15b;
+        --secondary: #1a1a2e;
+        --bg-main: #fdf8f2;
+        --transition: all 0.3s ease;
+    }
+
+    .payment-wrapper {
+        padding: 160px 0 100px;
+        background: radial-gradient(circle at top left, rgba(194,161,91,0.12) 0%, var(--bg-main) 60%);
+        min-height: 100vh;
+    }
+
+    .payment-grid {
+        display: grid;
+        grid-template-columns: 1.4fr 1fr;
+        gap: 40px;
+        align-items: start;
+    }
+
+    .payment-card {
+        background: white;
+        border-radius: 30px;
+        padding: 50px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.07);
+    }
+
+    .payment-card h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.2rem;
+        color: var(--secondary);
+        margin-bottom: 8px;
+    }
+
+    .payment-card .subtitle {
+        color: #888;
+        font-size: 0.95rem;
+        margin-bottom: 35px;
+    }
+
+    /* Step indicator */
+    .steps {
+        display: flex;
+        align-items: center;
+        gap: 0;
+        margin-bottom: 40px;
+    }
+    .step {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #bbb;
+    }
+    .step .num {
+        width: 32px; height: 32px;
+        border-radius: 50%;
+        background: #eee;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 700;
+        font-size: 0.85rem;
+    }
+    .step.done .num { background: var(--primary); color: white; }
+    .step.done { color: var(--primary); }
+    .step.active .num { background: var(--secondary); color: white; }
+    .step.active { color: var(--secondary); }
+    .step-line { flex: 1; height: 2px; background: #eee; margin: 0 10px; }
+    .step-line.done { background: var(--primary); }
+
+    /* Payment method cards */
+    .method-label {
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--secondary);
+        margin-bottom: 15px;
+    }
+
+    .method-options {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+        margin-bottom: 30px;
+    }
+
+    .method-card {
+        border: 2px solid #eee;
+        border-radius: 16px;
+        padding: 18px 12px;
+        text-align: center;
+        cursor: pointer;
+        transition: var(--transition);
+        background: #fafafa;
+        position: relative;
+    }
+    .method-card:hover { border-color: var(--primary); background: #fffbf3; }
+    .method-card.selected {
+        border-color: var(--primary);
+        background: linear-gradient(135deg, #fffbf0, #fff8e8);
+        box-shadow: 0 6px 20px rgba(194,161,91,0.2);
+    }
+    .method-card .check {
+        position: absolute; top: 8px; right: 10px;
+        color: var(--primary); font-size: 0.9rem;
+        display: none;
+    }
+    .method-card.selected .check { display: block; }
+    .method-card i { font-size: 1.8rem; color: #aaa; margin-bottom: 8px; display: block; }
+    .method-card.selected i { color: var(--primary); }
+    .method-card span { font-size: 0.8rem; font-weight: 600; color: #555; }
+    .method-card input[type="radio"] { display: none; }
+
+    /* Detail panels */
+    .detail-panel { display: none; }
+    .detail-panel.active { display: block; }
+
+    .form-group {
+        margin-bottom: 22px;
+    }
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #555;
+        margin-bottom: 8px;
+    }
+    .form-control {
+        width: 100%;
+        padding: 14px 18px;
+        border-radius: 12px;
+        border: 1.5px solid #e8e8e8;
+        background: #fafafa;
+        font-family: inherit;
+        font-size: 0.95rem;
+        transition: var(--transition);
+        box-sizing: border-box;
+    }
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary);
+        background: white;
+        box-shadow: 0 0 0 4px rgba(194,161,91,0.1);
+    }
+    .inline-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+
+    .cash-info {
+        background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+        border: 1.5px solid #86efac;
+        border-radius: 16px;
+        padding: 24px;
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+    }
+    .cash-info i { font-size: 1.5rem; color: #16a34a; margin-top: 2px; }
+    .cash-info p { margin: 0; color: #166534; font-size: 0.9rem; line-height: 1.6; }
+
+    .upi-info {
+        background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+        border: 1.5px solid #c4b5fd;
+        border-radius: 16px;
+        padding: 24px;
+    }
+    .upi-info p { color: #5b21b6; font-size: 0.88rem; margin: 0 0 12px; }
+
+    .secure-badge {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.78rem;
+        color: #888;
+        margin-top: 20px;
+    }
+    .secure-badge i { color: #16a34a; }
+
+    .btn-confirm {
+        width: 100%;
+        padding: 18px;
+        background: linear-gradient(135deg, var(--primary), #a8873d);
+        color: white;
+        border: none;
+        border-radius: 14px;
+        font-size: 1rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        cursor: pointer;
+        transition: var(--transition);
+        margin-top: 10px;
+        font-family: inherit;
+    }
+    .btn-confirm:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(194,161,91,0.4);
+    }
+
+    /* Summary card */
+    .summary-card {
+        position: sticky;
+        top: 120px;
+        background: var(--secondary);
+        color: white;
+        border-radius: 30px;
+        padding: 40px;
+    }
+    .summary-card h3 {
+        font-family: 'Playfair Display', serif;
+        color: var(--primary);
+        font-size: 1.7rem;
+        margin-bottom: 28px;
+    }
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .summary-row:last-of-type { border-bottom: none; }
+    .summary-row .lbl { opacity: 0.55; font-size: 0.85rem; }
+    .summary-row .val { font-weight: 600; font-size: 0.95rem; text-align: right; max-width: 55%; }
+    .price-total {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid var(--primary);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .price-total .amount {
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        color: var(--primary);
+    }
+    .salon-tag {
+        margin-top: 30px;
+        padding: 16px;
+        background: rgba(255,255,255,0.05);
+        border-radius: 14px;
+        font-size: 0.8rem;
+        opacity: 0.7;
+        line-height: 1.6;
+    }
+    .salon-tag i { color: var(--primary); margin-right: 6px; }
+
+    @media (max-width: 1024px) {
+        .payment-grid { grid-template-columns: 1fr; }
+        .summary-card { position: static; }
+    }
+    @media (max-width: 600px) {
+        .method-options { grid-template-columns: 1fr 1fr; }
+        .payment-card { padding: 24px 18px; }
+        .inline-grid { grid-template-columns: 1fr; }
+        .payment-wrapper { padding: 130px 0 60px; }
+        .payment-card h2 { font-size: 1.6rem; }
+        .steps { gap: 0; }
+        .step span { display: none; }
+    }
+    @media (max-width: 380px) {
+        .method-options { grid-template-columns: 1fr; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="payment-wrapper">
+    <div class="container">
+        <div class="payment-grid">
+
+            <!-- LEFT: Payment Form -->
+            <div class="payment-card">
+                <h2>Complete Your Booking</h2>
+                <p class="subtitle">One last step — choose how you'd like to pay</p>
+
+                <!-- Steps -->
+                <div class="steps">
+                    <div class="step done">
+                        <div class="num"><i class="fas fa-check" style="font-size:0.7rem"></i></div>
+                        <span>Service</span>
+                    </div>
+                    <div class="step-line done"></div>
+                    <div class="step active">
+                        <div class="num">2</div>
+                        <span>Payment</span>
+                    </div>
+                    <div class="step-line"></div>
+                    <div class="step">
+                        <div class="num">3</div>
+                        <span>Confirmed</span>
+                    </div>
+                </div>
+
+                <form method="POST" action="{% url 'booking_confirm' %}" id="paymentForm">
+                    {% csrf_token %}
+                    <!-- Pass booking details forward -->
+                    <input type="hidden" name="service" value="{{ booking_data.service }}">
+                    <input type="hidden" name="date" value="{{ booking_data.date }}">
+                    <input type="hidden" name="time" value="{{ booking_data.time }}">
+                    <input type="hidden" name="notes" value="{{ booking_data.notes }}">
+                    <input type="hidden" name="price" value="{{ booking_data.price }}">
+                    <input type="hidden" name="payment_method" id="paymentMethodInput" value="">
+
+                    <div class="method-label">Select Payment Method</div>
+                    <div class="method-options">
+                        <label class="method-card" data-method="credit_card">
+                            <input type="radio" name="_method" value="credit_card">
+                            <i class="fas fa-fa-check check"></i>
+                            <i class="fas fa-credit-card"></i>
+                            <span>Card</span>
+                        </label>
+                        <label class="method-card" data-method="upi">
+                            <input type="radio" name="_method" value="upi">
+                            <i class="fas fa-check check"></i>
+                            <i class="fas fa-mobile-alt"></i>
+                            <span>UPI</span>
+                        </label>
+                        <label class="method-card" data-method="cash">
+                            <input type="radio" name="_method" value="cash">
+                            <i class="fas fa-check check"></i>
+                            <i class="fas fa-money-bill-wave"></i>
+                            <span>Cash</span>
+                        </label>
+                    </div>
+
+                    <!-- Card Panel -->
+                    <div class="detail-panel" id="cardPanel">
+                        <div class="form-group">
+                            <label>Cardholder Name</label>
+                            <input type="text" class="form-control" id="cardName" placeholder="Name on card">
+                        </div>
+                        <div class="form-group">
+                            <label>Card Number</label>
+                            <input type="text" class="form-control" id="cardNumber" placeholder="4242 4242 4242 4242" maxlength="19">
+                        </div>
+                        <div class="inline-grid">
+                            <div class="form-group">
+                                <label>Expiry Date</label>
+                                <input type="text" class="form-control" id="cardExpiry" placeholder="MM / YY" maxlength="7">
+                            </div>
+                            <div class="form-group">
+                                <label>CVV</label>
+                                <input type="text" class="form-control" id="cardCvv" placeholder="•••" maxlength="4">
+                            </div>
+                        </div>
+                        <div class="secure-badge">
+                            <i class="fas fa-lock"></i> Demo mode — no real charge. Card data is not stored.
+                        </div>
+                    </div>
+
+                    <!-- UPI Panel -->
+                    <div class="detail-panel" id="upiPanel">
+                        <div class="upi-info">
+                            <p><i class="fas fa-info-circle"></i> Enter your UPI ID to simulate payment</p>
+                            <div class="form-group" style="margin-bottom:0">
+                                <label>UPI ID</label>
+                                <input type="text" class="form-control" id="upiId" placeholder="yourname@upi">
+                            </div>
+                        </div>
+                        <div class="secure-badge" style="margin-top:12px">
+                            <i class="fas fa-lock"></i> Demo mode — no real transaction processed.
+                        </div>
+                    </div>
+
+                    <!-- Cash Panel -->
+                    <div class="detail-panel" id="cashPanel">
+                        <div class="cash-info">
+                            <i class="fas fa-check-circle"></i>
+                            <p><strong>Pay at Salon</strong><br>No online payment needed. Simply arrive at your appointment and pay at the counter. Your booking is confirmed instantly.</p>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-confirm" id="confirmBtn">
+                        <i class="fas fa-lock" style="margin-right:8px"></i> Confirm Booking
+                    </button>
+                </form>
+            </div>
+
+            <!-- RIGHT: Summary -->
+            <div class="summary-card">
+                <h3>Ritual Summary</h3>
+                <div class="summary-row">
+                    <span class="lbl">Service</span>
+                    <span class="val">{{ booking_data.service }}</span>
+                </div>
+                <div class="summary-row">
+                    <span class="lbl">Date</span>
+                    <span class="val">{{ booking_data.date }}</span>
+                </div>
+                <div class="summary-row">
+                    <span class="lbl">Time</span>
+                    <span class="val">{{ booking_data.time_display }}</span>
+                </div>
+                {% if booking_data.notes %}
+                <div class="summary-row">
+                    <span class="lbl">Notes</span>
+                    <span class="val" style="font-size:0.85rem; opacity:0.8">{{ booking_data.notes }}</span>
+                </div>
+                {% endif %}
+                <div class="summary-row">
+                    <span class="lbl">Lead Stylist</span>
+                    <span class="val">To be assigned</span>
+                </div>
+                <div class="price-total">
+                    <div>
+                        <p style="font-size:0.75rem; opacity:0.5; text-transform:uppercase; margin-bottom:4px;">Estimated Total</p>
+                        <div class="amount">₹{{ booking_data.price }}</div>
+                    </div>
+                    <i class="fas fa-gem" style="font-size:2rem; color:var(--primary);"></i>
+                </div>
+                <div class="salon-tag">
+                    <i class="fas fa-map-marker-alt"></i> Ghuman Market, Bhogpur<br>
+                    <i class="fas fa-phone-alt"></i> +91 9041585455
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    const methodCards = document.querySelectorAll('.method-card');
+    const cardPanel = document.getElementById('cardPanel');
+    const upiPanel = document.getElementById('upiPanel');
+    const cashPanel = document.getElementById('cashPanel');
+    const paymentMethodInput = document.getElementById('paymentMethodInput');
+
+    methodCards.forEach(card => {
+        card.addEventListener('click', () => {
+            methodCards.forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            card.querySelector('input[type="radio"]').checked = true;
+
+            const method = card.dataset.method;
+            paymentMethodInput.value = method;
+
+            cardPanel.classList.remove('active');
+            upiPanel.classList.remove('active');
+            cashPanel.classList.remove('active');
+
+            if (method === 'credit_card') cardPanel.classList.add('active');
+            else if (method === 'upi') upiPanel.classList.add('active');
+            else if (method === 'cash') cashPanel.classList.add('active');
+        });
+    });
+
+    // Card number formatting
+    const cardNumberInput = document.getElementById('cardNumber');
+    if (cardNumberInput) {
+        cardNumberInput.addEventListener('input', function() {
+            let v = this.value.replace(/\D/g, '').substring(0, 16);
+            this.value = v.replace(/(.{4})/g, '$1 ').trim();
+        });
+    }
+
+    // Expiry formatting
+    const cardExpiryInput = document.getElementById('cardExpiry');
+    if (cardExpiryInput) {
+        cardExpiryInput.addEventListener('input', function() {
+            let v = this.value.replace(/\D/g, '').substring(0, 4);
+            if (v.length >= 3) v = v.substring(0,2) + ' / ' + v.substring(2);
+            this.value = v;
+        });
+    }
+
+    // Form validation
+    document.getElementById('paymentForm').addEventListener('submit', function(e) {
+        const method = paymentMethodInput.value;
+        if (!method) {
+            alert('Please select a payment method.');
+            e.preventDefault();
+            return;
+        }
+        if (method === 'credit_card') {
+            const num = document.getElementById('cardNumber').value.replace(/\s/g, '');
+            const exp = document.getElementById('cardExpiry').value;
+            const cvv = document.getElementById('cardCvv').value;
+            const name = document.getElementById('cardName').value;
+            if (!name.trim()) { alert('Please enter the cardholder name.'); e.preventDefault(); return; }
+            if (num.length < 13) { alert('Please enter a valid card number.'); e.preventDefault(); return; }
+            if (!exp.match(/^\d{2}\s*\/\s*\d{2}$/)) { alert('Expiry must be MM / YY format.'); e.preventDefault(); return; }
+            if (cvv.length < 3) { alert('CVV must be at least 3 digits.'); e.preventDefault(); return; }
+        } else if (method === 'upi') {
+            const upi = document.getElementById('upiId').value;
+            if (!upi.includes('@')) { alert('Please enter a valid UPI ID (e.g. name@upi).'); e.preventDefault(); return; }
+        }
+    });
+</script>
+{% endblock %}

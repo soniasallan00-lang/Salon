@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blush & Co. | Schedule Your Visit</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(125deg, #fff5ed 0%, #fef7f0 100%);
+            min-height: 100vh;
+            padding: 40px 24px;
+        }
+        :root {
+            --gold: #c2a15b;
+            --gold-dark: #a88547;
+        }
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .schedule-card {
+            background: white;
+            border-radius: 48px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.1);
+        }
+        .schedule-card h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+            color: #2c2a29;
+        }
+        .schedule-card p {
+            color: #5b534e;
+            margin-bottom: 2rem;
+        }
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.4rem;
+            color: #3a3532;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 14px 18px;
+            border: 1px solid #e5dbd3;
+            border-radius: 60px;
+            font-family: inherit;
+            background: #fefbf8;
+            font-size: 0.95rem;
+            transition: 0.2s;
+        }
+        .form-group textarea {
+            border-radius: 28px;
+            resize: vertical;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(194,161,91,0.2);
+        }
+        .double-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .btn-submit {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+            color: white;
+            width: 100%;
+            border: none;
+            padding: 14px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 0.5rem;
+        }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(194,161,91,0.3);
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 1.5rem;
+            color: var(--gold-dark);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: white;
+            border-left: 5px solid var(--gold);
+            border-radius: 16px;
+            padding: 1rem 1.5rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+        .toast.show {
+            transform: translateX(0);
+        }
+        .toast i {
+            color: var(--gold);
+            font-size: 1.5rem;
+        }
+        @media (max-width: 600px) {
+            .schedule-card { padding: 1.5rem; }
+            .double-group { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="schedule-card">
+        <h1>📅 Schedule your visit</h1>
+        <p>Fill out the form below and we’ll confirm your appointment within 24 hours. Plus, get a complimentary scalp massage with any service!</p>
+
+        <form id="scheduleForm">
+            <div class="double-group">
+                <div class="form-group">
+                    <label>Full name *</label>
+                    <input type="text" id="fullName" required>
+                </div>
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" id="email" required>
+                </div>
+            </div>
+            <div class="double-group">
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="tel" id="phone">
+                </div>
+                <div class="form-group">
+                    <label>Preferred date</label>
+                    <input type="date" id="preferredDate">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Service interest *</label>
+                <select id="service" required>
+                    <option value="">Select a service</option>
+                    <option>Haircut & Style</option>
+                    <option>Balayage / Highlights</option>
+                    <option>Color</option>
+                    <option>Keratin Smoothing</option>
+                    <option>Manicure / Pedicure</option>
+                    <option>Facial / Spa</option>
+                    <option>Makeup</option>
+                    <option>Bridal Package</option>
+                    <option>Consultation only</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Additional notes (allergies, requests)</label>
+                <textarea rows="3" id="notes" placeholder="e.g., I'm allergic to lavender, or I'd like a morning slot..."></textarea>
+            </div>
+            <button type="submit" class="btn-submit">Request appointment <i class="fas fa-arrow-right"></i></button>
+        </form>
+        <!-- <a href="index.html" class="back-link">← Back to home</a> -->
+         <a href="{% url 'index' %}" class="back-link">← Back to home</a>
+    </div>
+</div>
+
+<!-- Toast notification -->
+<div id="toast" class="toast">
+    <i class="fas fa-check-circle"></i>
+    <span id="toastMessage">Your request has been sent!</span>
+</div>
+
+<script>
+    const form = document.getElementById('scheduleForm');
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toastMessage');
+
+    function showToast(msg) {
+        toastMessage.innerText = msg;
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 4000);
+    }
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('fullName').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const service = document.getElementById('service').value;
+
+        if (!name || !email || !service) {
+            showToast("⚠️ Please fill in all required fields.");
+            return;
+        }
+        // Success
+        showToast(`✨ Thank you, ${name}! We'll contact you within 24 hours to confirm your ${service} appointment.`);
+        form.reset();
+    });
+</script>
+</body>
+</html>

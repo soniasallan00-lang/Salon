@@ -1,0 +1,322 @@
+{% extends 'myapp/base.html' %}
+{% load static %}
+
+{% block title %}The Better Feel Unisex | Home{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Homepage Specific Styles */
+    .hero {
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        position: relative;
+        background: url("{% static 'images/home.jpg' %}") center/cover no-repeat;
+        overflow: hidden;
+    }
+
+    .hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, rgba(31, 28, 26, 0.8) 0%, rgba(31, 28, 26, 0.2) 60%);
+        z-index: 1;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        color: white;
+        max-width: 700px;
+    }
+
+    .hero-content h1 {
+        font-size: 5rem;
+        margin-bottom: 25px;
+        line-height: 1.1;
+    }
+
+    .hero-content p {
+        font-size: 1.2rem;
+        margin-bottom: 40px;
+        opacity: 0.9;
+        font-weight: 300;
+        letter-spacing: 1px;
+    }
+
+    .hero-btns {
+        display: flex;
+        gap: 20px;
+    }
+
+    /* About Preview */
+    .about-preview {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 80px;
+        align-items: center;
+    }
+
+    .about-img-stack {
+        position: relative;
+        padding-bottom: 50px;
+    }
+
+    .about-img-main {
+        border-radius: 40px;
+        box-shadow: var(--shadow-lg);
+        transform: rotate(-3deg);
+        z-index: 2;
+        position: relative;
+    }
+
+    .about-img-sub {
+        position: absolute;
+        bottom: 0;
+        right: -20px;
+        width: 60%;
+        border-radius: 30px;
+        border: 10px solid white;
+        box-shadow: var(--shadow-md);
+        z-index: 3;
+        transform: rotate(5deg);
+    }
+
+    /* Services Grid */
+    .services-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 30px;
+    }
+
+    .service-card {
+        text-align: center;
+        padding: 50px 30px;
+    }
+
+    .service-card i {
+        font-size: 3.5rem;
+        color: var(--primary);
+        margin-bottom: 30px;
+        display: inline-block;
+        transition: var(--transition);
+    }
+
+    .service-card:hover i {
+        transform: scale(1.1) rotate(10deg);
+    }
+
+    .service-card h3 {
+        font-size: 1.8rem;
+        margin-bottom: 15px;
+    }
+
+    /* Gallery Section */
+    .gallery-preview {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+    }
+
+    .gallery-item {
+        height: 400px;
+        border-radius: 25px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .gallery-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 1s ease;
+    }
+
+    .gallery-item:hover img {
+        transform: scale(1.1);
+    }
+
+    .gallery-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(194, 161, 91, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: var(--transition);
+    }
+
+    .gallery-item:hover .gallery-overlay {
+        opacity: 1;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 1024px) {
+        .hero-content h1 { font-size: 3.2rem; }
+        .about-preview { grid-template-columns: 1fr; gap: 50px; }
+        .gallery-preview { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+        .hero-content h1 { font-size: 2.4rem; }
+        .hero-content p  { font-size: 1rem; }
+        .hero-btns { flex-direction: column; gap: 12px; }
+        .hero-btns .btn { width: 100%; text-align: center; }
+        .about-img-sub { display: none; }
+        .gallery-preview { grid-template-columns: 1fr 1fr; gap: 12px; }
+        .gallery-item { height: 200px; }
+        .services-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 480px) {
+        .hero-content h1 { font-size: 2rem; }
+        .gallery-preview { grid-template-columns: 1fr; }
+        .gallery-item { height: 240px; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container">
+        <div class="hero-content" data-aos>
+            <h1 class="font-serif">Where Elegance <br>Meets Artistry</h1>
+            <p>Experience the pinnacle of luxury grooming and beauty treatments in a sanctuary designed just for you.
+            </p>
+            <div class="hero-btns">
+                <a href="{% url 'booking' %}" class="btn btn-primary">Book Appointment</a>
+                <a href="{% url 'services' %}" class="btn btn-outline"
+                    style="color: white; border-color: white;">Explore Services</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section id="about">
+    <div class="container">
+        <div class="about-preview">
+            <div class="about-img-stack" data-aos>
+                <img src="{% static 'images/about.jpg' %}" alt="Salon Interior" class="about-img-main">
+                <img src="{% static 'images/home.jpg' %}" alt="Stylist Working" class="about-img-sub">
+            </div>
+            <div class="about-text" data-aos>
+                <div class="section-title" style="text-align: left;">
+                    <span class="text-gold"
+                        style="text-transform: uppercase; letter-spacing: 3px; font-weight: 600;">Our Philosophy</span>
+                    <h2 style="margin-top: 10px;">Your Beauty, Our<br>Undivided Passion</h2>
+                    <div class="divider" style="margin: 20px 0;"></div>
+                </div>
+                <p style="margin-bottom: 25px;">Welcome to The Better Feel & Unisex Salon, where heritage meets
+                    innovation. We believe that true beauty is about confidence, which is why our master stylists are
+                    dedicated to crafting personalized looks that celebrate your uniqueness.</p>
+                <p style="margin-bottom: 35px; color: var(--text-muted);">From transformative haircuts to holistic spa
+                    rituals, every visit is curated to leave you glowing from the inside out.</p>
+                <a href="{% url 'about' %}" class="btn btn-outline">Discover Our Story</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Services Section -->
+<section id="services" style="background: var(--bg-offset);">
+    <div class="container">
+        <div class="section-title" data-aos>
+            <span class="text-gold" style="text-transform: uppercase; letter-spacing: 3px; font-weight: 600;">Curated
+                Selection</span>
+            <h2>Signature Services</h2>
+            <div class="divider"></div>
+        </div>
+
+        <div class="services-grid">
+            <div class="premium-card service-card" data-aos>
+                <i class="fas fa-cut"></i>
+                <h3>Hair Styling</h3>
+                <p>Precision cuts, vibrant color, and avant-garde styling for all hair types.</p>
+            </div>
+            <div class="premium-card service-card" data-aos>
+                <i class="fas fa-spa"></i>
+                <h3>Luxury Spa</h3>
+                <p>Rejuvenating facials and body treatments using organic premium botanicals.</p>
+            </div>
+            <div class="premium-card service-card" data-aos>
+                <i class="fas fa-hand-sparkles"></i>
+                <h3>Nail Artistry</h3>
+                <p>Exquisite manicures and pedicures that blend hygiene with high-fashion art.</p>
+            </div>
+            <div class="premium-card service-card" data-aos>
+                <i class="fas fa-paintbrush"></i>
+                <h3>Modern Grooming</h3>
+                <p>Sophisticated shaves and beard sculpting for the contemporary gentleman.</p>
+            </div>
+        </div>
+
+        <div class="text-center" style="margin-top: 60px;" data-aos>
+            <a href="{% url 'services' %}" class="btn btn-outline">View Full Menu</a>
+        </div>
+    </div>
+</section>
+
+<!-- Gallery Preview -->
+<section id="gallery">
+    <div class="container">
+        <div class="section-title" data-aos>
+            <span class="text-gold" style="text-transform: uppercase; letter-spacing: 3px; font-weight: 600;">Artistry
+                in Motion</span>
+            <h2>Recent Masterpieces</h2>
+            <div class="divider"></div>
+        </div>
+
+        <div class="gallery-preview">
+            <div class="gallery-item" data-aos>
+                <img src="{% static 'images/pexels-skgphotography-2301842.jpg' %}" alt="Gallery image">
+                <div class="gallery-overlay"><i class="fas fa-plus text-white"></i></div>
+            </div>
+            <div class="gallery-item" data-aos>
+                <img src="{% static 'images/pexels-svliiim-34835305.jpg' %}" alt="Gallery image">
+                <div class="gallery-overlay"><i class="fas fa-plus text-white"></i></div>
+            </div>
+            <div class="gallery-item" data-aos>
+                <img src="{% static 'images/pexels-k3ithvision-8881953.jpg' %}" alt="Gallery image">
+                <div class="gallery-overlay"><i class="fas fa-plus text-white"></i></div>
+            </div>
+            <div class="gallery-item" data-aos>
+                <img src="{% static 'images/pexels-farhad-19239103.jpg' %}" alt="Gallery image">
+                <div class="gallery-overlay"><i class="fas fa-plus text-white"></i></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonial Section -->
+<section id="testimonials" style="background: var(--secondary); color: white;">
+    <div class="container">
+        <div class="section-title" data-aos>
+            <span class="text-gold" style="text-transform: uppercase; letter-spacing: 3px; font-weight: 600;">Client
+                Love</span>
+            <h2 style="color: white;">The Experience</h2>
+            <div class="divider"></div>
+        </div>
+
+        <div style="max-width: 800px; margin: 0 auto; text-align: center;" data-aos>
+            <i class="fas fa-quote-left" style="font-size: 3rem; color: var(--primary); margin-bottom: 30px;"></i>
+            <h3 class="font-serif" style="font-size: 2rem; font-style: italic; font-weight: 400; line-height: 1.4;">"An
+                absolute oasis of luxury. My stylist didn't just give me a haircut; they gave me a vision. I've never
+                felt more pampered or understood."</h3>
+            <div style="margin-top: 30px;">
+                <p style="font-weight: 600; font-size: 1.2rem; color: var(--primary);">Jessica M.</p>
+                <p style="opacity: 0.6; font-size: 0.9rem;">Fashion Consultant</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
